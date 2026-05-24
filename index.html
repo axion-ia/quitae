@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quitaê — Entrar</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.box{background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:40px 36px;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
+.logo-icon{width:40px;height:40px;background:#1a1a18;border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.logo-name{font-size:18px;font-weight:500}
+.logo-sub{font-size:12px;color:#9b9b92}
+h2{font-size:20px;font-weight:500;margin-bottom:6px}
+.sub{font-size:13px;color:#6b6b64;margin-bottom:28px}
+.fg{margin-bottom:16px}
+.fg label{display:block;font-size:12px;color:#6b6b64;margin-bottom:5px}
+.wrap{position:relative}
+.fg input{width:100%;padding:10px 14px;border:1px solid rgba(0,0,0,.14);border-radius:6px;font-family:'DM Sans',sans-serif;font-size:14px;color:#1a1a18;background:#fff;outline:none;transition:border-color .15s;height:42px}
+.fg input:focus{border-color:#1a1a18}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#9b9b92;padding:4px;display:flex;align-items:center}
+.btn{width:100%;padding:11px;border-radius:6px;font-size:14px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;background:#1a1a18;color:#fff;margin-top:8px;transition:background .15s}
+.btn:hover{background:#333}
+.errmsg{display:none;background:#fdf0f0;color:#c94040;font-size:13px;padding:10px 14px;border-radius:6px;margin-top:12px;text-align:center}
+.errmsg.show{display:block}
+.footer{text-align:center;margin-top:24px;font-size:12px;color:#9b9b92}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="logo-name">Quitaê</div>
+      <div class="logo-sub">Gestão Financeira</div>
+    </div>
+  </div>
+  <h2>Bem-vindo de Volta</h2>
+  <p class="sub">Entre com suas credenciais para acessar o sistema.</p>
+  <div class="fg">
+    <label>Usuário</label>
+    <input id="u" type="text" placeholder="seu usuário" autocomplete="username">
+  </div>
+  <div class="fg">
+    <label>Senha</label>
+    <div class="wrap">
+      <input id="s" type="password" placeholder="••••••••" autocomplete="current-password">
+      <button class="eye" type="button" onclick="var i=document.getElementById('s');i.type=i.type==='password'?'text':'password'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+  </div>
+  <button class="btn" onclick="entrar()">Entrar</button>
+  <div class="errmsg" id="err">Usuário ou senha incorretos.</div>
+  <div class="footer">Quitaê · Uso Local e Privado</div>
+</div>
+<script>
+// ─── ALTERE AQUI ──────────────
+var USUARIO = 'admin';
+var SENHA   = 'quitae123';
+// ──────────────────────────────
+(function(){
+  try {
+    var x = localStorage.getItem('quitae_auth');
+    if (x) {
+      var d = JSON.parse(x);
+      if (Date.now() < d.e) { window.location.href = 'dashboard.html'; }
+    }
+  } catch(e) {}
+})();
+function entrar() {
+  var u = document.getElementById('u').value.trim();
+  var s = document.getElementById('s').value;
+  if (u === USUARIO && s === SENHA) {
+    localStorage.setItem('quitae_auth', JSON.stringify({ u: u, e: Date.now() + 8*60*60*1000 }));
+    window.location.href = 'dashboard.html';
+  } else {
+    var e = document.getElementById('err');
+    e.classList.add('show');
+    document.getElementById('s').value = '';
+    document.getElementById('s').focus();
+    setTimeout(function(){ e.classList.remove('show'); }, 3000);
+  }
+}
+document.getElementById('u').addEventListener('keydown', function(e){ if(e.key==='Enter') document.getElementById('s').focus(); });
+document.getElementById('s').addEventListener('keydown', function(e){ if(e.key==='Enter') entrar(); });
+document.getElementById('u').focus();
+</script>
+</body>
+</html>
