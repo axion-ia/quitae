@@ -295,6 +295,9 @@ function qFiltro(t){
 }
 function openDrawer(id){
   editId=id;
+  // Recarrega categorias do localStorage toda vez que abre o drawer
+  var rk=localStorage.getItem('fincontrol_categorias');cats=rk?JSON.parse(rk):[];
+  fillCats();
   document.getElementById('dt').textContent=id?'Editar Lançamento':'Novo Lançamento';
   document.getElementById('btn-sv').textContent=id?'Salvar Alterações':'Salvar';
   if(id){var c=contas.find(function(x){return x.id===id;});document.getElementById('f-desc').value=c.descricao;document.getElementById('f-val').value=c.valor;document.getElementById('f-venc').value=c.vencimento;document.getElementById('f-cat').value=c.catId||'';document.getElementById('f-forma').value=c.forma||'boleto';document.getElementById('f-forn').value=c.fornecedor||'';document.getElementById('f-doc').value=c.doc||'';document.getElementById('f-obs').value=c.obs||'';document.getElementById('f-parc').value='1';document.getElementById('pp').innerHTML='';}
