@@ -94,14 +94,14 @@ select.fs:focus{border-color:var(--tx)}
 .db{flex:1;overflow-y:auto;padding:24px}
 .df{padding:16px 24px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
 /* Form */
-.fg{margin-bottom:16px;overflow:visible}
+.fg{margin-bottom:16px}
 .fg label{display:block;font-size:12px;color:var(--tx2);margin-bottom:5px}
 .fg label .req{color:var(--red)}
-.fg input,.fg select,.fg textarea{width:100%;padding:8px 12px;border:1px solid var(--bdm);border-radius:var(--rs);font-family:var(--f);font-size:13px;-webkit-appearance:auto;appearance:auto;color:var(--tx);background:var(--sf);outline:none;transition:border-color .15s}
+.fg input,.fg select,.fg textarea{width:100%;padding:8px 12px;border:1px solid var(--bdm);border-radius:var(--rs);font-family:var(--f);font-size:13px;color:var(--tx);background:var(--sf);outline:none;transition:border-color .15s}
 .fg input,.fg select{height:36px}
 .fg textarea{height:72px;resize:vertical}
 .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--tx)}
-.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px;overflow:visible}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .div{border:none;border-top:1px solid var(--bd);margin:20px 0}
 .ssec{font-size:12px;font-weight:500;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px}
 /* Modal */
@@ -125,10 +125,14 @@ select.fs:focus{border-color:var(--tx)}
 .leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 @media(max-width:768px){.sidebar{display:none}.content{padding:16px}.drawer{width:100%}}
 .stats4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.stat-lk{text-decoration:none;display:block;cursor:pointer}
+.slk{text-decoration:none;display:block;cursor:pointer}
 .pp{background:var(--sf2);border-radius:var(--rs);padding:10px 12px;margin-top:8px;font-size:12px;color:var(--tx2)}
 .pp-r{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed var(--bd)}
 .pp-r:last-child{border-bottom:none}
+/* Popup categoria */
+.cat-popup{position:fixed;background:#fff;border:1px solid rgba(0,0,0,.14);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:9999;min-width:180px;padding:4px 0;font-family:'DM Sans',sans-serif}
+.cat-popup-item{padding:8px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.cat-popup-item:hover{background:#f0efe9}
 </style>
 </head>
 <body>
@@ -152,16 +156,35 @@ select.fs:focus{border-color:var(--tx)}
     </div>
     <div class="content">
       <div class="stats4">
-        <div class="stat-lk" onclick="qFiltro('atrasado')"><div class="stat" style="border-color:transparent"><div class="stat-lbl">Em Atraso</div><div class="stat-val" id="kv-at" style="color:var(--red)">R$ 0</div><div class="stat-sub" id="ks-at">0 títulos</div></div></div>
-        <div class="stat-lk" onclick="qFiltro('hoje')"><div class="stat"><div class="stat-lbl">Vencem Hoje</div><div class="stat-val" id="kv-hj" style="color:var(--ora)">R$ 0</div><div class="stat-sub" id="ks-hj">0 títulos</div></div></div>
-        <div class="stat-lk" onclick="qFiltro('todos')"><div class="stat"><div class="stat-lbl">Total em Aberto</div><div class="stat-val" id="kv-ab">R$ 0</div><div class="stat-sub" id="ks-ab">0 títulos</div></div></div>
-        <div class="stat-lk" onclick="qFiltro('pago')"><div class="stat"><div class="stat-lbl">Pagos no Mês</div><div class="stat-val" id="kv-pg" style="color:var(--grn)">R$ 0</div><div class="stat-sub" id="ks-pg">0 títulos</div></div></div>
+        <div class="slk" onclick="qFiltro('atrasado')"><div class="stat"><div class="stat-lbl">Em Atraso</div><div class="stat-val" id="kv-at" style="color:var(--red)">R$ 0</div><div class="stat-sub" id="ks-at">0 títulos</div></div></div>
+        <div class="slk" onclick="qFiltro('hoje')"><div class="stat"><div class="stat-lbl">Vencem Hoje</div><div class="stat-val" id="kv-hj" style="color:var(--ora)">R$ 0</div><div class="stat-sub" id="ks-hj">0 títulos</div></div></div>
+        <div class="slk" onclick="qFiltro('todos')"><div class="stat"><div class="stat-lbl">Total em Aberto</div><div class="stat-val" id="kv-ab">R$ 0</div><div class="stat-sub" id="ks-ab">0 títulos</div></div></div>
+        <div class="slk" onclick="qFiltro('pago')"><div class="stat"><div class="stat-lbl">Pagos no Mês</div><div class="stat-val" id="kv-pg" style="color:var(--grn)">R$ 0</div><div class="stat-sub" id="ks-pg">0 títulos</div></div></div>
       </div>
+      <!-- Filtros -->
       <div class="fbar">
         <div class="sw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="si" id="busca" placeholder="Buscar por descrição ou fornecedor..." oninput="render()"></div>
-        <select class="fs" id="f-st" onchange="render()"><option value="todos">Todos os Status</option><option value="pendente">Pendente</option><option value="atrasado">Atrasado</option><option value="pago">Pago</option><option value="cancelado">Cancelado</option></select>
-        <select class="fs" id="f-cat" onchange="render()"><option value="todas">Todas as Categorias</option></select>
-        <select class="fs" id="f-per" onchange="render()"><option value="30" selected>Próximos 30 Dias</option><option value="hoje">Vence Hoje</option><option value="7">Próximos 7 Dias</option><option value="mes">Este Mês</option><option value="atrasado">Somente Atrasados</option><option value="todos">Qualquer Data</option></select>
+        <select class="fs" id="f-st" onchange="render()">
+          <option value="todos">Todos os Status</option>
+          <option value="pendente">Pendente</option>
+          <option value="atrasado">Atrasado</option>
+          <option value="pago">Pago</option>
+          <option value="cancelado">Cancelado</option>
+        </select>
+        <select class="fs" id="f-tipo" onchange="render()">
+          <option value="todos">Todos os Tipos</option>
+          <option value="fixa">Despesa Fixa</option>
+          <option value="variavel">Despesa Variável</option>
+          <option value="investimento">Investimento</option>
+        </select>
+        <select class="fs" id="f-per" onchange="render()">
+          <option value="30" selected>Próximos 30 Dias</option>
+          <option value="hoje">Vence Hoje</option>
+          <option value="7">Próximos 7 Dias</option>
+          <option value="mes">Este Mês</option>
+          <option value="atrasado">Somente Atrasados</option>
+          <option value="todos">Qualquer Data</option>
+        </select>
       </div>
       <div class="tcard">
         <div class="tcard-top"><span class="tcard-cnt" id="cnt">0 registros</span><button class="btn btn-g" style="font-size:12px;padding:5px 12px" onclick="exportCSV()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button></div>
@@ -179,79 +202,109 @@ select.fs:focus{border-color:var(--tx)}
     </div>
   </div>
 </div>
+
 <!-- Drawer -->
 <div class="ov" id="ov" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="dh"><div class="dt" id="dt">Novo Lançamento</div><button class="btn-i" onclick="closeDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="db">
     <div class="ssec">Dados da Conta</div>
-    <div class="fg"><label>Descrição <span class="req">*</span></label><input id="f-desc" placeholder="Ex: Aluguel Sede Maio/2026" maxlength="120"></div>
-    <div class="r2"><div class="fg"><label>Valor <span class="req">*</span></label><input id="f-val" type="number" min="0.01" step="0.01" placeholder="0,00"></div><div class="fg"><label>Vencimento <span class="req">*</span></label><input id="f-venc" type="date"></div></div>
-    <div class="r2"><div class="fg"><label>Forma de Pagamento</label><select id="f-forma"><option value="boleto">Boleto</option><option value="pix">PIX</option><option value="ted">TED / DOC</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="outro">Outro</option></select></div></div>
+    <div class="fg"><label>Descrição <span class="req">*</span></label><input id="f-desc" placeholder="Ex: Aluguel Sede" maxlength="120"></div>
+    <div class="r2">
+      <div class="fg"><label>Valor Total <span class="req">*</span></label><input id="f-val" type="number" min="0.01" step="0.01" placeholder="0,00" oninput="prevParc()"></div>
+      <div class="fg"><label>Vencimento <span class="req">*</span></label><input id="f-venc" type="date" oninput="prevParc()"></div>
+    </div>
+    <div class="r2">
+      <div class="fg"><label>Forma de Pagamento</label><select id="f-forma"><option value="boleto">Boleto</option><option value="pix">PIX</option><option value="ted">TED / DOC</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="outro">Outro</option></select></div>
+      <div class="fg"><label>Tipo de Despesa</label><select id="f-tdespesa"><option value="">Nenhum</option><option value="fixa">Despesa Fixa</option><option value="variavel">Despesa Variável</option><option value="investimento">Investimento</option></select></div>
+    </div>
     <div class="fg"><label>Fornecedor / Credor</label><input id="f-forn" placeholder="Nome do fornecedor" maxlength="100"></div>
     <div class="fg"><label>Nº Documento / NF</label><input id="f-doc" placeholder="Ex: NF-4821" maxlength="60"></div>
     <div class="fg"><label>Observações</label><textarea id="f-obs" placeholder="Informações adicionais..."></textarea></div>
     <hr class="div">
     <div class="ssec">Parcelamento</div>
-    <div class="r2"><div class="fg"><label>Parcelas</label><select id="f-parc" onchange="prevParc()"><option value="1">À Vista (1x)</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="10">10x</option><option value="12">12x</option></select></div><div class="fg"><label>Intervalo</label><select id="f-int" onchange="prevParc()"><option value="30">Mensal (30 Dias)</option><option value="15">Quinzenal (15 Dias)</option><option value="7">Semanal (7 Dias)</option></select></div></div>
+    <div class="r2">
+      <div class="fg"><label>Nº de Parcelas</label><select id="f-parc" onchange="prevParc()"><option value="1">À Vista (1x)</option><option value="2">2x</option><option value="3">3x</option><option value="4">4x</option><option value="5">5x</option><option value="6">6x</option><option value="10">10x</option><option value="12">12x</option></select></div>
+      <div class="fg"><label>Intervalo</label><select id="f-int" onchange="prevParc()"><option value="30">Mensal (30 Dias)</option><option value="15">Quinzenal (15 Dias)</option><option value="7">Semanal (7 Dias)</option></select></div>
+    </div>
     <div id="pp"></div>
+    <hr class="div">
+    <div class="ssec">Recorrência (Despesa Fixa)</div>
+    <div class="fg">
+      <label>Repetir automaticamente todo mês?</label>
+      <select id="f-recorr"><option value="nao">Não</option><option value="sim">Sim — gerar para os próximos meses</option></select>
+    </div>
+    <div class="fg" id="f-recorr-meses-wrap" style="display:none">
+      <label>Por quantos meses?</label>
+      <select id="f-recorr-meses"><option value="3">3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option><option value="24">24 meses</option></select>
+    </div>
   </div>
-  <div class="df"><button class="btn btn-g" onclick="closeDrawer()">Cancelar</button><button class="btn btn-p" id="btn-sv" onclick="saveConta()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Salvar</button></div>
+  <div class="df">
+    <button class="btn btn-g" onclick="closeDrawer()">Cancelar</button>
+    <button class="btn btn-p" id="btn-sv" onclick="saveConta()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Salvar
+    </button>
+  </div>
 </div>
+
 <!-- Modal baixa -->
 <div class="mbg" id="m-baixa"><div class="modal">
-  <h3>Registrar Pagamento</h3><p id="baixa-inf" style="font-size:12px;color:var(--tx3);margin-bottom:16px"></p>
+  <h3>Registrar Pagamento</h3>
+  <p id="baixa-inf" style="font-size:12px;color:var(--tx3);margin-bottom:16px"></p>
   <div class="fg"><label>Valor Pago <span class="req">*</span></label><input id="b-val" type="number" min="0.01" step="0.01"></div>
-  <div class="r2"><div class="fg"><label>Data do Pagamento <span class="req">*</span></label><input id="b-dt" type="date"></div><div class="fg"><label>Forma</label><select id="b-forma"><option value="boleto">Boleto</option><option value="pix">PIX</option><option value="ted">TED</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option></select></div></div>
+  <div class="r2">
+    <div class="fg"><label>Data do Pagamento <span class="req">*</span></label><input id="b-dt" type="date"></div>
+    <div class="fg"><label>Forma</label><select id="b-forma"><option value="boleto">Boleto</option><option value="pix">PIX</option><option value="ted">TED</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option></select></div>
+  </div>
   <div class="mbtns"><button class="btn btn-g" onclick="closeBaixa()">Cancelar</button><button class="btn btn-p" onclick="confBaixa()">Confirmar Pagamento</button></div>
 </div></div>
+
 <!-- Modal excluir -->
 <div class="mbg" id="m-del"><div class="modal"><h3>Excluir Lançamento?</h3><p id="del-msg"></p><div class="mbtns"><button class="btn btn-g" onclick="closeDel()">Cancelar</button><button class="btn btn-d" onclick="confDel()">Excluir</button></div></div></div>
+
 <div id="toast"></div>
+
 <script>
 (function(){try{var x=localStorage.getItem('quitae_auth');if(!x){window.location.href='index.html';return;}var d=JSON.parse(x);if(Date.now()>d.e){localStorage.removeItem('quitae_auth');window.location.href='index.html';}}catch(e){window.location.href='index.html';}})();
+
 var CK='fincontrol_contas',KK='fincontrol_categorias';
 var contas=[],cats=[],editId=null,baixaId=null,delId=null;
 var hoje=new Date();hoje.setHours(0,0,0,0);
+
 function fmt(v){return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtD(s){return new Date(s+'T00:00:00').toLocaleDateString('pt-BR');}
 function iso(d){return d.toISOString().slice(0,10);}
 function addD(d,n){var r=new Date(d);r.setDate(r.getDate()+n);return r;}
+function addM(d,n){var r=new Date(d);r.setMonth(r.getMonth()+n);return r;}
 function diff(s){return Math.round((hoje-new Date(s+'T00:00:00'))/86400000);}
 function uid(){return Math.random().toString(36).slice(2,9);}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function getCat(id){return cats.find(function(c){return c.id===id;})||null;}
 function st(c){if(c.status==='pago'||c.status==='cancelado')return c.status;return diff(c.vencimento)>0?'atrasado':'pendente';}
 function save(){localStorage.setItem(CK,JSON.stringify(contas));}
+
 function load(){
   var rc=localStorage.getItem(CK);contas=rc?JSON.parse(rc):[];
   var rk=localStorage.getItem(KK);cats=rk?JSON.parse(rk):[];
-  fillCats();render();kpis();
+  render();kpis();
 }
-function fillCats(){
-  cats = JSON.parse(localStorage.getItem('fincontrol_categorias') || '[]');
-  var s = document.getElementById('f-cat');
-  if(!s) return;
-  var val = s.value;
-  s.innerHTML = '<option value="">Sem Categoria</option>';
-  cats.forEach(function(c){
-    var o = document.createElement('option');
-    o.value = c.id;
-    o.textContent = c.nome;
-    s.appendChild(o);
-  });
-  if(val) s.value = val;
-}
+
 function filtrar(){
   var b=document.getElementById('busca').value.toLowerCase();
   var sv=document.getElementById('f-st').value;
-  var cb=document.getElementById('f-cat-bar');var cv=cb?cb.value:'todas';
+  var tv=document.getElementById('f-tipo').value;
   var pv=document.getElementById('f-per').value;
   return contas.filter(function(c){
     var s2=st(c);
     if(b&&!c.descricao.toLowerCase().includes(b)&&!(c.fornecedor||'').toLowerCase().includes(b))return false;
     if(sv!=='todos'&&s2!==sv)return false;
-    if(cv!=='todas'&&c.catId!==cv)return false;
+    // Filtro por tipo de despesa via categoria
+    if(tv!=='todos'){
+      var cat=c.catId?getCat(c.catId):null;
+      var tipo=cat?cat.tipo:(c.tipoDespesa||'');
+      if(tipo!==tv)return false;
+    }
     var d2=new Date(c.vencimento+'T00:00:00');
     if(pv==='hoje'&&diff(c.vencimento)!==0)return false;
     else if(pv==='atrasado'&&diff(c.vencimento)<=0)return false;
@@ -261,7 +314,9 @@ function filtrar(){
     return true;
   });
 }
+
 function render(){
+  var rc=localStorage.getItem(KK);cats=rc?JSON.parse(rc):[];
   var l=filtrar().sort(function(a,b){return a.vencimento.localeCompare(b.vencimento);});
   var tb=document.getElementById('tbl'),em=document.getElementById('empty');
   document.getElementById('cnt').textContent=l.length+' registro'+(l.length!==1?'s':'');
@@ -273,16 +328,30 @@ function render(){
     var s2=st(c),cat=c.catId?getCat(c.catId):null,df=diff(c.vencimento);
     var atr=s2==='atrasado'?'<br><span style="font-size:10px;color:var(--red)">'+df+' dia(s) em atraso</span>':'';
     var parc=c.totalParcelas>1?(c.numParcela+'/'+c.totalParcelas):'—';
+    // Categoria clicável
+    var catCell=cat
+      ?'<span style="display:inline-flex;align-items:center;gap:5px"><span class="dot" style="background:'+cat.cor+'"></span>'+esc(cat.nome)+'</span>'
+      :'<span style="font-size:11px;color:var(--blu)">+ Definir</span>';
     var ac='';
     if(s2!=='pago'&&s2!=='cancelado')ac+='<button class="btn-i" title="Registrar Pagamento" onclick="openBaixa(\''+c.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg></button>';
     if(s2==='pago')ac+='<button class="btn-i" title="Desfazer Pagamento" style="color:var(--ora)" onclick="desfazer(\''+c.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></button>';
     if(s2!=='cancelado')ac+='<button class="btn-i" title="Editar" onclick="openDrawer(\''+c.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>';
     ac+='<button class="btn-i" style="color:var(--red)" title="Excluir" onclick="openDel(\''+c.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>';
-    return '<tr><td>'+fmtD(c.vencimento)+atr+'</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.descricao)+'">'+esc(c.descricao)+'</td><td style="color:var(--tx2);font-size:12px">'+esc(c.fornecedor||'—')+'</td><td onclick="selCat(event,\''+c.id+'\')" style="cursor:pointer">'+(cat?'<span style="display:inline-flex;align-items:center;gap:5px"><span class="dot" style="background:'+cat.cor+'"></span>'+esc(cat.nome)+'</span>':'<span style="color:var(--tx3)">—</span>')+'</td><td style="color:var(--tx3);font-size:12px">'+parc+'</td><td><span class="bdg '+SB[s2]+'">'+SL[s2]+'</span></td><td style="text-align:right;font-weight:500">'+fmt(c.valor)+'</td><td><div class="acts">'+ac+'</div></td></tr>';
+    return '<tr>'+
+      '<td>'+fmtD(c.vencimento)+atr+'</td>'+
+      '<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.descricao)+'">'+esc(c.descricao)+'</td>'+
+      '<td style="color:var(--tx2);font-size:12px">'+esc(c.fornecedor||'—')+'</td>'+
+      '<td onclick="selCat(event,\''+c.id+'\')" style="cursor:pointer">'+catCell+'</td>'+
+      '<td style="color:var(--tx3);font-size:12px">'+parc+'</td>'+
+      '<td><span class="bdg '+SB[s2]+'">'+SL[s2]+'</span></td>'+
+      '<td style="text-align:right;font-weight:500">'+fmt(c.valor)+'</td>'+
+      '<td><div class="acts">'+ac+'</div></td>'+
+    '</tr>';
   }).join('');
 }
+
 function kpis(){
-  var ab=contas.filter(function(c){var s2=st(c);return s2!=='pago'&&s2!=='cancelado';});
+  var ab=contas.filter(function(c){var s=st(c);return s!=='pago'&&s!=='cancelado';});
   var at=contas.filter(function(c){return st(c)==='atrasado';});
   var hj=contas.filter(function(c){return st(c)!=='pago'&&st(c)!=='cancelado'&&diff(c.vencimento)===0;});
   var m=hoje.getMonth(),y=hoje.getFullYear();
@@ -293,6 +362,7 @@ function kpis(){
   set('ab',ab.reduce(function(s,c){return s+c.valor;},0),ab.length);
   set('pg',pg.reduce(function(s,c){return s+(c.valorPago||c.valor);},0),pg.length);
 }
+
 function qFiltro(t){
   if(t==='atrasado'){document.getElementById('f-st').value='atrasado';document.getElementById('f-per').value='todos';}
   else if(t==='hoje'){document.getElementById('f-st').value='pendente';document.getElementById('f-per').value='hoje';}
@@ -300,17 +370,14 @@ function qFiltro(t){
   else{document.getElementById('f-st').value='todos';document.getElementById('f-per').value='30';}
   render();
 }
-function openDrawer(id){
-  editId=id;
-  fillCats();
-  document.getElementById('dt').textContent=id?'Editar Lançamento':'Novo Lançamento';
-  document.getElementById('btn-sv').textContent=id?'Salvar Alterações':'Salvar';
-  if(id){var c=contas.find(function(x){return x.id===id;});document.getElementById('f-desc').value=c.descricao;document.getElementById('f-val').value=c.valor;document.getElementById('f-venc').value=c.vencimento;document.getElementById('f-cat').value=c.catId||'';document.getElementById('f-forma').value=c.forma||'boleto';document.getElementById('f-forn').value=c.fornecedor||'';document.getElementById('f-doc').value=c.doc||'';document.getElementById('f-obs').value=c.obs||'';document.getElementById('f-parc').value='1';document.getElementById('pp').innerHTML='';}
-  else{document.getElementById('f-desc').value='';document.getElementById('f-val').value='';document.getElementById('f-venc').value=iso(addD(hoje,7));document.getElementById('f-cat').value='';document.getElementById('f-forma').value='boleto';document.getElementById('f-forn').value='';document.getElementById('f-doc').value='';document.getElementById('f-obs').value='';document.getElementById('f-parc').value='1';document.getElementById('pp').innerHTML='';}
-  document.getElementById('ov').classList.add('open');document.getElementById('drawer').classList.add('open');
-  setTimeout(function(){document.getElementById('f-desc').focus();},300);
-}
-function closeDrawer(){document.getElementById('ov').classList.remove('open');document.getElementById('drawer').classList.remove('open');editId=null;}
+
+// Recorrência toggle
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('f-recorr').addEventListener('change',function(){
+    document.getElementById('f-recorr-meses-wrap').style.display=this.value==='sim'?'':'none';
+  });
+});
+
 function prevParc(){
   var v=parseFloat(document.getElementById('f-val').value)||0;
   var vc=document.getElementById('f-venc').value;
@@ -319,13 +386,59 @@ function prevParc(){
   var div=document.getElementById('pp');
   if(n<=1||!v||!vc){div.innerHTML='';return;}
   var vp=+(v/n).toFixed(2);
-  var h='<div class="pp">';
-  for(var i=0;i<Math.min(n,6);i++){var d=fmtD(iso(addD(new Date(vc+'T00:00:00'),i*inv)));h+='<div class="pp-r"><span>'+(i+1)+'/'+n+'</span><span>'+d+'</span><span>'+fmt(vp)+'</span></div>';}
+  var h='<div class="pp"><div style="display:flex;justify-content:space-between;font-weight:500;margin-bottom:4px"><span>Parcela</span><span>Vencimento</span><span>Valor</span></div>';
+  for(var i=0;i<Math.min(n,6);i++){
+    var d=fmtD(iso(addD(new Date(vc+'T00:00:00'),i*inv)));
+    h+='<div class="pp-r"><span>'+(i+1)+'/'+n+'</span><span>'+d+'</span><span>'+fmt(vp)+'</span></div>';
+  }
   if(n>6)h+='<div style="text-align:center;color:var(--tx3);font-size:11px;padding-top:4px">+ '+(n-6)+' parcelas</div>';
   div.innerHTML=h+'</div>';
 }
-document.getElementById('f-val').addEventListener('input',prevParc);
-document.getElementById('f-venc').addEventListener('input',prevParc);
+
+function openDrawer(id){
+  editId=id;
+  var rc=localStorage.getItem(KK);cats=rc?JSON.parse(rc):[];
+  document.getElementById('dt').textContent=id?'Editar Lançamento':'Novo Lançamento';
+  document.getElementById('btn-sv').textContent=id?'Salvar Alterações':'Salvar';
+  if(id){
+    var c=contas.find(function(x){return x.id===id;});
+    document.getElementById('f-desc').value=c.descricao;
+    document.getElementById('f-val').value=c.valor;
+    document.getElementById('f-venc').value=c.vencimento;
+    document.getElementById('f-forma').value=c.forma||'boleto';
+    document.getElementById('f-tdespesa').value=c.tipoDespesa||'';
+    document.getElementById('f-forn').value=c.fornecedor||'';
+    document.getElementById('f-doc').value=c.doc||'';
+    document.getElementById('f-obs').value=c.obs||'';
+    document.getElementById('f-parc').value='1';
+    document.getElementById('f-recorr').value='nao';
+    document.getElementById('f-recorr-meses-wrap').style.display='none';
+    document.getElementById('pp').innerHTML='';
+  } else {
+    document.getElementById('f-desc').value='';
+    document.getElementById('f-val').value='';
+    document.getElementById('f-venc').value=iso(addD(hoje,7));
+    document.getElementById('f-forma').value='boleto';
+    document.getElementById('f-tdespesa').value='';
+    document.getElementById('f-forn').value='';
+    document.getElementById('f-doc').value='';
+    document.getElementById('f-obs').value='';
+    document.getElementById('f-parc').value='1';
+    document.getElementById('f-recorr').value='nao';
+    document.getElementById('f-recorr-meses-wrap').style.display='none';
+    document.getElementById('pp').innerHTML='';
+  }
+  document.getElementById('ov').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  setTimeout(function(){document.getElementById('f-desc').focus();},300);
+}
+
+function closeDrawer(){
+  document.getElementById('ov').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+  editId=null;
+}
+
 function saveConta(){
   var desc=document.getElementById('f-desc').value.trim();
   var val=parseFloat(document.getElementById('f-val').value);
@@ -335,38 +448,107 @@ function saveConta(){
   if(!val||val<=0){document.getElementById('f-val').style.borderColor='var(--red)';ok=false;}else{document.getElementById('f-val').style.borderColor='';}
   if(!venc){document.getElementById('f-venc').style.borderColor='var(--red)';ok=false;}else{document.getElementById('f-venc').style.borderColor='';}
   if(!ok){toast('Preencha os campos obrigatórios.',true);return;}
-  var catId=null;
+
   var forma=document.getElementById('f-forma').value;
+  var tipoDespesa=document.getElementById('f-tdespesa').value;
   var forn=document.getElementById('f-forn').value.trim();
   var doc=document.getElementById('f-doc').value.trim();
   var obs=document.getElementById('f-obs').value.trim();
   var np=parseInt(document.getElementById('f-parc').value);
   var inv=parseInt(document.getElementById('f-int').value);
+  var recorr=document.getElementById('f-recorr').value;
+  var recorrMeses=parseInt(document.getElementById('f-recorr-meses').value);
   var vp=+(val/np).toFixed(2);
-  if(editId){var c=contas.find(function(x){return x.id===editId;});Object.assign(c,{descricao:desc,valor:val,vencimento:venc,catId:catId||null,forma:forma,fornecedor:forn,doc:doc,obs:obs});toast('Lançamento atualizado.');}
-  else{for(var i=0;i<np;i++){var vd=iso(addD(new Date(venc+'T00:00:00'),i*inv));contas.unshift({id:uid(),descricao:desc,valor:vp,vencimento:vd,catId:catId||null,forma:forma,fornecedor:forn,doc:doc,obs:obs,status:'pendente',valorPago:0,numParcela:i+1,totalParcelas:np});}toast(np>1?np+' parcelas lançadas.':'Lançamento criado.');}
+
+  if(editId){
+    var c=contas.find(function(x){return x.id===editId;});
+    Object.assign(c,{descricao:desc,valor:val,vencimento:venc,tipoDespesa:tipoDespesa,forma:forma,fornecedor:forn,doc:doc,obs:obs});
+    toast('Lançamento atualizado.');
+  } else {
+    // Parcelamento
+    for(var i=0;i<np;i++){
+      var vd=iso(addD(new Date(venc+'T00:00:00'),i*inv));
+      contas.unshift({id:uid(),descricao:desc,valor:vp,vencimento:vd,tipoDespesa:tipoDespesa,forma:forma,fornecedor:forn,doc:doc,obs:obs,status:'pendente',valorPago:0,numParcela:i+1,totalParcelas:np});
+    }
+    // Recorrência mensal
+    if(recorr==='sim'&&np===1){
+      for(var m=1;m<recorrMeses;m++){
+        var vdm=iso(addM(new Date(venc+'T00:00:00'),m));
+        contas.unshift({id:uid(),descricao:desc,valor:val,vencimento:vdm,tipoDespesa:tipoDespesa,forma:forma,fornecedor:forn,doc:doc,obs:obs,status:'pendente',valorPago:0,numParcela:1,totalParcelas:1,recorrente:true});
+      }
+      toast('Conta lançada para '+recorrMeses+' meses.');
+    } else {
+      toast(np>1?np+' parcelas lançadas.':'Lançamento criado.');
+    }
+  }
   save();closeDrawer();render();kpis();
 }
+
+// Popup categoria inline
+function selCat(e, contaId){
+  e.stopPropagation();
+  var old=document.getElementById('cat-popup');
+  if(old){old.remove();return;}
+  var cats2=JSON.parse(localStorage.getItem(KK)||'[]');
+  var td=e.currentTarget;
+  var rect=td.getBoundingClientRect();
+  var popup=document.createElement('div');
+  popup.id='cat-popup';
+  popup.className='cat-popup';
+  popup.style.top=(rect.bottom+4)+'px';
+  popup.style.left=rect.left+'px';
+
+  var opt0=document.createElement('div');
+  opt0.className='cat-popup-item';
+  opt0.style.color='var(--tx3)';
+  opt0.textContent='Sem Categoria';
+  opt0.onclick=function(ev){ev.stopPropagation();setCat(contaId,null);popup.remove();}
+  popup.appendChild(opt0);
+
+  cats2.forEach(function(cat){
+    var div=document.createElement('div');
+    div.className='cat-popup-item';
+    div.innerHTML='<span style="width:8px;height:8px;border-radius:50%;background:'+cat.cor+';display:inline-block;flex-shrink:0"></span>'+esc(cat.nome);
+    div.onclick=function(ev){ev.stopPropagation();setCat(contaId,cat.id);popup.remove();}
+    popup.appendChild(div);
+  });
+
+  document.body.appendChild(popup);
+  setTimeout(function(){
+    document.addEventListener('click',function rem(){popup.remove();document.removeEventListener('click',rem);});
+  },0);
+}
+
+function setCat(contaId,catId){
+  var c=contas.find(function(x){return x.id===contaId;});
+  if(c){c.catId=catId;save();render();kpis();}
+}
+
 function openBaixa(id){
   baixaId=id;var c=contas.find(function(x){return x.id===id;});
   document.getElementById('baixa-inf').textContent=c.descricao+' · '+fmt(c.valor)+' · Venc. '+fmtD(c.vencimento);
-  document.getElementById('b-val').value=c.valor;document.getElementById('b-dt').value=iso(hoje);document.getElementById('b-forma').value=c.forma||'boleto';
+  document.getElementById('b-val').value=c.valor;
+  document.getElementById('b-dt').value=iso(hoje);
+  document.getElementById('b-forma').value=c.forma||'boleto';
   document.getElementById('m-baixa').classList.add('open');
 }
 function closeBaixa(){document.getElementById('m-baixa').classList.remove('open');baixaId=null;}
 function confBaixa(){
-  var v=parseFloat(document.getElementById('b-val').value);var d=document.getElementById('b-dt').value;
+  var v=parseFloat(document.getElementById('b-val').value);
+  var d=document.getElementById('b-dt').value;
   if(!v||v<=0||!d){toast('Preencha valor e data.',true);return;}
   var c=contas.find(function(x){return x.id===baixaId;});
   c.status='pago';c.valorPago=v;c.dataPag=d;c.formaPag=document.getElementById('b-forma').value;
   save();closeBaixa();render();kpis();toast('Pagamento registrado.');
 }
+
 function desfazer(id){
   if(!confirm('Desfazer pagamento? O título voltará para Pendente.'))return;
   var c=contas.find(function(x){return x.id===id;});
   c.status='pendente';c.valorPago=0;delete c.dataPag;delete c.formaPag;
   save();render();kpis();toast('Pagamento desfeito.');
 }
+
 function openDel(id){
   delId=id;var c=contas.find(function(x){return x.id===id;});
   document.getElementById('del-msg').textContent='"'+c.descricao+'" · '+fmt(c.valor)+' será excluído permanentemente.';
@@ -374,60 +556,23 @@ function openDel(id){
 }
 function closeDel(){document.getElementById('m-del').classList.remove('open');delId=null;}
 function confDel(){contas=contas.filter(function(c){return c.id!==delId;});save();render();kpis();closeDel();toast('Lançamento excluído.');}
+
 function exportCSV(){
   var l=filtrar();
-  var rows=[['Vencimento','Descrição','Fornecedor','Categoria','Parcela','Status','Valor','Valor Pago']];
-  l.forEach(function(c){var cat=c.catId?(getCat(c.catId)||{nome:''}).nome:'';rows.push([c.vencimento,c.descricao,c.fornecedor||'',cat,c.totalParcelas>1?(c.numParcela+'/'+c.totalParcelas):'',st(c),c.valor.toFixed(2),(c.valorPago||0).toFixed(2)]);});
+  var rows=[['Vencimento','Descrição','Fornecedor','Categoria','Tipo','Parcela','Status','Valor','Valor Pago']];
+  l.forEach(function(c){
+    var cat=c.catId?(getCat(c.catId)||{nome:''}).nome:'';
+    rows.push([c.vencimento,c.descricao,c.fornecedor||'',cat,c.tipoDespesa||'',c.totalParcelas>1?(c.numParcela+'/'+c.totalParcelas):'',st(c),c.valor.toFixed(2),(c.valorPago||0).toFixed(2)]);
+  });
   var csv=rows.map(function(r){return r.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));a.download='contas-a-pagar.csv';a.click();
 }
+
 function toast(msg,e){var t=document.getElementById('toast');t.textContent=msg;t.className='show'+(e?' err':'');clearTimeout(t._t);t._t=setTimeout(function(){t.className='';},2800);}
 document.getElementById('m-baixa').addEventListener('click',function(e){if(e.target===this)closeBaixa();});
 document.getElementById('m-del').addEventListener('click',function(e){if(e.target===this)closeDel();});
+
 load();
-
-// Popup de seleção de categoria inline
-function selCat(e, contaId) {
-  e.stopPropagation();
-  // Remove popup existente
-  var old = document.getElementById('cat-popup');
-  if (old) { old.remove(); return; }
-
-  var cats2 = JSON.parse(localStorage.getItem('fincontrol_categorias') || '[]');
-  var td = e.currentTarget;
-  var rect = td.getBoundingClientRect();
-
-  var popup = document.createElement('div');
-  popup.id = 'cat-popup';
-  popup.style.cssText = 'position:fixed;top:'+(rect.bottom+4)+'px;left:'+rect.left+'px;background:#fff;border:1px solid rgba(0,0,0,.14);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:9999;min-width:180px;padding:4px 0;font-family:DM Sans,sans-serif';
-
-  var opt0 = document.createElement('div');
-  opt0.textContent = 'Sem Categoria';
-  opt0.style.cssText = 'padding:8px 14px;font-size:13px;cursor:pointer;color:#9b9b92';
-  opt0.onmouseover = function(){this.style.background='#f0efe9';}
-  opt0.onmouseout = function(){this.style.background='';}
-  opt0.onclick = function(ev){ev.stopPropagation();setCat(contaId, null);popup.remove();}
-  popup.appendChild(opt0);
-
-  cats2.forEach(function(cat) {
-    var div = document.createElement('div');
-    div.style.cssText = 'padding:8px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px';
-    div.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:'+cat.cor+';display:inline-block;flex-shrink:0"></span>'+cat.nome;
-    div.onmouseover = function(){this.style.background='#f0efe9';}
-    div.onmouseout = function(){this.style.background='';}
-    div.onclick = function(ev){ev.stopPropagation();setCat(contaId, cat.id);popup.remove();}
-    popup.appendChild(div);
-  });
-
-  document.body.appendChild(popup);
-  setTimeout(function(){document.addEventListener('click', function rem(){popup.remove();document.removeEventListener('click',rem);});},0);
-}
-
-function setCat(contaId, catId) {
-  var conta = contas.find(function(x){return x.id===contaId;});
-  if (conta) { conta.catId = catId; save(); render(); kpis(); }
-}
-
 </script>
 </body>
 </html>

@@ -125,9 +125,10 @@ select.fs:focus{border-color:var(--tx)}
 .leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 @media(max-width:768px){.sidebar{display:none}.content{padding:16px}.drawer{width:100%}}
 .stats4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stats2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
 .g2{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-bottom:16px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
-.slk{text-decoration:none;display:block}
+.slk{text-decoration:none;display:block;cursor:pointer}
 .slk:hover .stat{border-color:var(--bdm)}
 .ar{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--bd);font-size:13px}
 .ar:last-child{border-bottom:none}
@@ -138,7 +139,7 @@ select.fs:focus{border-color:var(--tx)}
 .bgf{height:4px;border-radius:99px}
 .cr{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px}
 .cr:last-child{border-bottom:none}
-@media(max-width:900px){.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr}}
+@media(max-width:900px){.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr}.stats2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -165,25 +166,46 @@ select.fs:focus{border-color:var(--tx)}
       </div>
     </div>
     <div class="content">
+      <!-- KPIs principais -->
       <div class="stats4">
         <a class="slk" href="contas.html"><div class="stat"><div class="stat-lbl">Em Atraso</div><div class="stat-val" id="kv-at" style="color:var(--red)">R$ 0</div><div class="stat-sub" id="ks-at">0 títulos</div></div></a>
         <a class="slk" href="contas.html"><div class="stat"><div class="stat-lbl">Vencem Hoje</div><div class="stat-val" id="kv-hj" style="color:var(--ora)">R$ 0</div><div class="stat-sub" id="ks-hj">0 títulos</div></div></a>
         <a class="slk" href="contas.html"><div class="stat"><div class="stat-lbl">Próximos 7 Dias</div><div class="stat-val" id="kv-7d">R$ 0</div><div class="stat-sub" id="ks-7d">0 títulos</div></div></a>
         <a class="slk" href="contas.html"><div class="stat"><div class="stat-lbl">Pagos no Mês</div><div class="stat-val" id="kv-pg" style="color:var(--grn)">R$ 0</div><div class="stat-sub" id="ks-pg">0 títulos</div></div></a>
       </div>
+
+      <!-- KPIs Fixo x Variável -->
+      <div class="stats2">
+        <div class="stat" style="border-left:3px solid var(--blu)">
+          <div class="stat-lbl" style="color:var(--blu)">Despesas Fixas (Mês)</div>
+          <div class="stat-val" id="kv-fix">R$ 0</div>
+          <div class="stat-sub" id="ks-fix">0 títulos</div>
+        </div>
+        <div class="stat" style="border-left:3px solid var(--ora)">
+          <div class="stat-lbl" style="color:var(--ora)">Despesas Variáveis (Mês)</div>
+          <div class="stat-val" id="kv-var">R$ 0</div>
+          <div class="stat-sub" id="ks-var">0 títulos</div>
+        </div>
+      </div>
+
+      <!-- Gráficos -->
       <div class="g2">
         <div class="card"><div class="card-h"><div class="card-t">Saídas Últimos 6 Meses</div><a class="card-lk" href="relatorios.html">Ver Relatório →</a></div>
           <div style="padding:14px 16px"><div class="leg"><span class="leg-i"><span class="leg-sq" style="background:#378ADD"></span>Pago</span><span class="leg-i"><span class="leg-sq" style="background:#E24B4A"></span>Em Aberto</span></div><div style="position:relative;width:100%;height:180px"><canvas id="cMes"></canvas></div></div>
         </div>
-        <div class="card"><div class="card-h"><div class="card-t">Por Categoria</div></div>
-          <div style="padding:14px 16px"><div class="leg" id="leg-cat"></div><div style="position:relative;width:100%;height:180px"><canvas id="cCat"></canvas></div></div>
+        <div class="card"><div class="card-h"><div class="card-t">Fixo vs Variável (Mês)</div></div>
+          <div style="padding:14px 16px"><div class="leg" id="leg-fv"></div><div style="position:relative;width:100%;height:180px"><canvas id="cFV"></canvas></div></div>
         </div>
       </div>
+
+      <!-- 3 cards -->
       <div class="g3">
         <div class="card"><div class="card-h"><div class="card-t">Alertas Prioritários</div><span class="bdg bdg-d" id="badge-al">0</span></div><div id="l-al"><div class="empty" style="padding:24px"><p>Nenhum Alerta Urgente</p></div></div></div>
         <div class="card"><div class="card-h"><div class="card-t">Aging — Títulos Atrasados</div><a class="card-lk" href="relatorios.html">Ver →</a></div><div style="padding:8px 16px" id="l-ag"><div class="empty" style="padding:16px"><p>Nenhum Título em Atraso</p></div></div></div>
         <div class="card"><div class="card-h"><div class="card-t">Próximos Vencimentos</div><a class="card-lk" href="contas.html">Ver Todos →</a></div><div id="l-pr"><div class="empty" style="padding:24px"><p>Nenhum Vencimento Pendente</p></div></div></div>
       </div>
+
+      <!-- Resumo mês -->
       <div class="g2" style="margin-bottom:0">
         <div class="card"><div class="card-h"><div class="card-t">Top Categorias (Mês Atual)</div></div><div style="padding:8px 16px" id="l-cat"><div class="empty" style="padding:16px"><p>Nenhum Lançamento Este Mês</p></div></div></div>
         <div class="card"><div class="card-h"><div class="card-t">Resumo do Mês</div></div><div style="padding:16px" id="l-res"></div></div>
@@ -194,11 +216,13 @@ select.fs:focus{border-color:var(--tx)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 (function(){try{var x=localStorage.getItem('quitae_auth');if(!x){window.location.href='index.html';return;}var d=JSON.parse(x);if(Date.now()>d.e){localStorage.removeItem('quitae_auth');window.location.href='index.html';}}catch(e){window.location.href='index.html';}})();
+
 var CK='fincontrol_contas',KK='fincontrol_categorias';
 var contas=[],cats=[];
 var hoje=new Date();hoje.setHours(0,0,0,0);
 var DS=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
 document.getElementById('dt').textContent=DS[hoje.getDay()]+', '+hoje.toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+
 function fmt(v){return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function fmtD(s){return new Date(s+'T00:00:00').toLocaleDateString('pt-BR');}
 function addD(d,n){var r=new Date(d);r.setDate(r.getDate()+n);return r;}
@@ -207,9 +231,23 @@ function ml(d){return d.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function gc(id){return cats.find(function(c){return c.id===id;})||null;}
 function st(c){if(c.status==='pago'||c.status==='cancelado')return c.status;return diff(c.vencimento)>0?'atrasado':'pendente';}
+
+function getTipo(c){
+  // tipo pela categoria ou pelo campo tipoDespesa direto
+  if(c.catId){var cat=gc(c.catId);if(cat)return cat.tipo;}
+  return c.tipoDespesa||'';
+}
+
 function sair(){if(confirm('Deseja sair do Quitaê?')){localStorage.removeItem('quitae_auth');window.location.href='index.html';}}
-function load(){var rc=localStorage.getItem(CK);contas=rc?JSON.parse(rc):[];var rk=localStorage.getItem(KK);cats=rk?JSON.parse(rk):[];render();}
-function render(){kpis();chartMes();chartCat();alertas();aging();proximos();topCats();resumo();}
+
+function load(){
+  var rc=localStorage.getItem(CK);contas=rc?JSON.parse(rc):[];
+  var rk=localStorage.getItem(KK);cats=rk?JSON.parse(rk):[];
+  render();
+}
+
+function render(){kpis();chartMes();chartFV();alertas();aging();proximos();topCats();resumo();}
+
 function kpis(){
   var ab=contas.filter(function(c){var s=st(c);return s!=='pago'&&s!=='cancelado';});
   var at=contas.filter(function(c){return st(c)==='atrasado';});
@@ -217,27 +255,46 @@ function kpis(){
   var p7=contas.filter(function(c){var s=st(c);if(s==='pago'||s==='cancelado')return false;var d=new Date(c.vencimento+'T00:00:00');return d>hoje&&d<=addD(hoje,7);});
   var m=hoje.getMonth(),y=hoje.getFullYear();
   var pg=contas.filter(function(c){return c.status==='pago'&&c.dataPag&&new Date(c.dataPag+'T00:00:00').getMonth()===m&&new Date(c.dataPag+'T00:00:00').getFullYear()===y;});
+
+  // Fixo x Variável do mês
+  var doMes=contas.filter(function(c){var d=new Date(c.vencimento+'T00:00:00');return d.getMonth()===m&&d.getFullYear()===y&&c.status!=='cancelado';});
+  var fixas=doMes.filter(function(c){return getTipo(c)==='fixa';});
+  var variaveis=doMes.filter(function(c){return getTipo(c)==='variavel';});
+
   function set(k,v,n){document.getElementById('kv-'+k).textContent=fmt(v);document.getElementById('ks-'+k).textContent=n+' título'+(n!==1?'s':'');}
   set('at',at.reduce(function(s,c){return s+c.valor;},0),at.length);
   set('hj',hj.reduce(function(s,c){return s+c.valor;},0),hj.length);
   set('7d',p7.reduce(function(s,c){return s+c.valor;},0),p7.length);
   set('pg',pg.reduce(function(s,c){return s+(c.valorPago||c.valor);},0),pg.length);
+  set('fix',fixas.reduce(function(s,c){return s+c.valor;},0),fixas.length);
+  set('var',variaveis.reduce(function(s,c){return s+c.valor;},0),variaveis.length);
 }
-var chM,chC;
+
+var chM,chFV;
 function chartMes(){
-  var m={};for(var i=5;i>=0;i--){var d=new Date(hoje.getFullYear(),hoje.getMonth()-i,1);var k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');m[k]={lb:ml(d),pg:0,ab:0};}
-  contas.forEach(function(c){var k=c.vencimento.slice(0,7);if(!m[k])return;if(c.status==='pago')m[k].pg+=(c.valorPago||c.valor);else if(c.status!=='cancelado')m[k].ab+=c.valor;});
+  var meses={};
+  for(var i=5;i>=0;i--){var d=new Date(hoje.getFullYear(),hoje.getMonth()-i,1);var k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');meses[k]={lb:ml(d),pg:0,ab:0};}
+  contas.forEach(function(c){var k=c.vencimento.slice(0,7);if(!meses[k])return;if(c.status==='pago')meses[k].pg+=(c.valorPago||c.valor);else if(c.status!=='cancelado')meses[k].ab+=c.valor;});
   if(chM)chM.destroy();
-  chM=new Chart(document.getElementById('cMes'),{type:'bar',data:{labels:Object.values(m).map(function(x){return x.lb;}),datasets:[{label:'Pago',data:Object.values(m).map(function(x){return x.pg;}),backgroundColor:'#378ADD',borderRadius:3,borderSkipped:false},{label:'Em Aberto',data:Object.values(m).map(function(x){return x.ab;}),backgroundColor:'#E24B4A',borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return fmt(ctx.raw);}}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},y:{stacked:true,grid:{color:'rgba(128,128,128,.1)'},ticks:{font:{size:11},callback:function(v){return 'R$'+(v/1000).toFixed(0)+'k';}}}}}});
+  chM=new Chart(document.getElementById('cMes'),{type:'bar',data:{labels:Object.values(meses).map(function(x){return x.lb;}),datasets:[{label:'Pago',data:Object.values(meses).map(function(x){return x.pg;}),backgroundColor:'#378ADD',borderRadius:3,borderSkipped:false},{label:'Em Aberto',data:Object.values(meses).map(function(x){return x.ab;}),backgroundColor:'#E24B4A',borderRadius:3,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return fmt(ctx.raw);}}}},scales:{x:{stacked:true,grid:{display:false},ticks:{font:{size:11}}},y:{stacked:true,grid:{color:'rgba(128,128,128,.1)'},ticks:{font:{size:11},callback:function(v){return 'R$'+(v/1000).toFixed(0)+'k';}}}}}});
 }
-function chartCat(){
-  var tot={};contas.filter(function(c){return c.status!=='cancelado';}).forEach(function(c){if(!c.catId)return;tot[c.catId]=(tot[c.catId]||0)+c.valor;});
-  var s=Object.entries(tot).sort(function(a,b){return b[1]-a[1];}).slice(0,6);var total=s.reduce(function(x,e){return x+e[1];},0);
-  var leg=document.getElementById('leg-cat');leg.innerHTML='';
-  s.forEach(function(e){var cat=gc(e[0]);if(!cat)return;var p=total?Math.round(e[1]/total*100):0;leg.innerHTML+='<span class="leg-i"><span class="leg-sq" style="background:'+cat.cor+'"></span>'+esc(cat.nome)+' '+p+'%</span>';});
-  if(chC)chC.destroy();if(!s.length)return;
-  chC=new Chart(document.getElementById('cCat'),{type:'doughnut',data:{labels:s.map(function(e){return gc(e[0])?.nome||'Outro';}),datasets:[{data:s.map(function(e){return e[1];}),backgroundColor:s.map(function(e){return gc(e[0])?.cor||'#888';}),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return fmt(ctx.raw)+' ('+Math.round(ctx.raw/total*100)+'%)';}}}}}});
+
+function chartFV(){
+  var m=hoje.getMonth(),y=hoje.getFullYear();
+  var doMes=contas.filter(function(c){var d=new Date(c.vencimento+'T00:00:00');return d.getMonth()===m&&d.getFullYear()===y&&c.status!=='cancelado';});
+  var fixas=doMes.filter(function(c){return getTipo(c)==='fixa';}).reduce(function(s,c){return s+c.valor;},0);
+  var variaveis=doMes.filter(function(c){return getTipo(c)==='variavel';}).reduce(function(s,c){return s+c.valor;},0);
+  var invest=doMes.filter(function(c){return getTipo(c)==='investimento';}).reduce(function(s,c){return s+c.valor;},0);
+  var outros=doMes.filter(function(c){return !getTipo(c);}).reduce(function(s,c){return s+c.valor;},0);
+  var total=fixas+variaveis+invest+outros;
+  var leg=document.getElementById('leg-fv');leg.innerHTML='';
+  var dados=[{l:'Fixa',v:fixas,cor:'#378ADD'},{l:'Variável',v:variaveis,cor:'#EF9F27'},{l:'Investimento',v:invest,cor:'#1D9E75'},{l:'Sem Tipo',v:outros,cor:'#888780'}];
+  dados.filter(function(d){return d.v>0;}).forEach(function(d){var p=total?Math.round(d.v/total*100):0;leg.innerHTML+='<span class="leg-i"><span class="leg-sq" style="background:'+d.cor+'"></span>'+d.l+' '+p+'%</span>';});
+  if(chFV)chFV.destroy();
+  if(!total)return;
+  chFV=new Chart(document.getElementById('cFV'),{type:'doughnut',data:{labels:dados.map(function(d){return d.l;}),datasets:[{data:dados.map(function(d){return d.v;}),backgroundColor:dados.map(function(d){return d.cor;}),borderWidth:0,hoverOffset:4}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return fmt(ctx.raw)+' ('+Math.round(ctx.raw/total*100)+'%)';}}}}}});
 }
+
 function alertas(){
   var ug=contas.filter(function(c){var s=st(c);return s==='atrasado'||(s==='pendente'&&diff(c.vencimento)>=-3);}).sort(function(a,b){return diff(b.vencimento)-diff(a.vencimento);}).slice(0,5);
   document.getElementById('badge-al').textContent=ug.length;
@@ -249,6 +306,7 @@ function alertas(){
     return '<div class="ar"><div class="ai" style="background:'+bg+';color:'+cor+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div style="flex:1;min-width:0"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(c.descricao)+'</div><div style="font-size:11px;color:'+cor+'">'+desc+'</div></div><div style="font-weight:500;color:'+cor+';white-space:nowrap;padding-left:8px">'+fmt(c.valor)+'</div></div>';
   }).join('');
 }
+
 function aging(){
   var at=contas.filter(function(c){return st(c)==='atrasado';});
   var el=document.getElementById('l-ag');
@@ -257,12 +315,14 @@ function aging(){
   var mx=Math.max.apply(null,fx.map(function(f){return at.filter(function(c){var d=diff(c.vencimento);return d>=f.mn&&d<=f.mx;}).reduce(function(s,c){return s+c.valor;},0);}));if(!mx)mx=1;
   el.innerHTML=fx.map(function(f){var g=at.filter(function(c){var d=diff(c.vencimento);return d>=f.mn&&d<=f.mx;});var v=g.reduce(function(s,c){return s+c.valor;},0);var p=Math.round(v/mx*100);return '<div class="agr"><span class="dot" style="background:'+f.cor+'"></span><span style="flex:1;color:var(--tx2)">'+f.l+'</span><div class="bgb"><div class="bgf" style="width:'+p+'%;background:'+f.cor+'"></div></div><span style="font-weight:500;color:'+(v?f.cor:'var(--tx3)')+';min-width:80px;text-align:right">'+( v?fmt(v):'—')+'</span></div>';}).join('');
 }
+
 function proximos(){
   var pr=contas.filter(function(c){var s=st(c);return s==='pendente'||s==='atrasado';}).sort(function(a,b){return a.vencimento.localeCompare(b.vencimento);}).slice(0,6);
   var el=document.getElementById('l-pr');
   if(!pr.length){el.innerHTML='<div class="empty" style="padding:24px"><p>Nenhum Vencimento Pendente</p></div>';return;}
   el.innerHTML=pr.map(function(c){var df=diff(c.vencimento),s=st(c);var cor=s==='atrasado'?'var(--red)':df===0?'var(--ora)':'var(--tx2)';var desc=df>0?df+'d atraso':df===0?'Hoje':'em '+Math.abs(df)+'d';return '<div class="ar"><div style="flex:1;min-width:0"><div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(c.descricao)+'</div><div style="font-size:11px;color:var(--tx3)">'+fmtD(c.vencimento)+' · <span style="color:'+cor+'">'+desc+'</span></div></div><div style="font-weight:500;white-space:nowrap;padding-left:8px">'+fmt(c.valor)+'</div></div>';}).join('');
 }
+
 function topCats(){
   var m=hoje.getMonth(),y=hoje.getFullYear();
   var dm=contas.filter(function(c){var d=new Date(c.vencimento+'T00:00:00');return d.getMonth()===m&&d.getFullYear()===y&&c.status!=='cancelado';});
@@ -273,6 +333,7 @@ function topCats(){
   var mx=Math.max.apply(null,s.map(function(e){return e[1];}));
   el.innerHTML=s.map(function(e){var cat=gc(e[0]);if(!cat)return '';var p=Math.round(e[1]/mx*100);return '<div class="cr"><span class="dot" style="background:'+cat.cor+'"></span><span style="flex:1">'+esc(cat.nome)+'</span><div style="width:60px;height:4px;background:var(--sf2);border-radius:99px;flex-shrink:0"><div style="width:'+p+'%;height:4px;border-radius:99px;background:'+cat.cor+'"></div></div><span style="font-weight:500;min-width:80px;text-align:right">'+fmt(e[1])+'</span></div>';}).join('');
 }
+
 function resumo(){
   var m=hoje.getMonth(),y=hoje.getFullYear();
   var dm=contas.filter(function(c){var d=new Date(c.vencimento+'T00:00:00');return d.getMonth()===m&&d.getFullYear()===y&&c.status!=='cancelado';});
@@ -290,6 +351,7 @@ function resumo(){
     '<div style="display:flex;justify-content:space-between;font-size:13px;border-top:1px solid var(--bd);padding-top:10px"><span style="color:var(--red)">Em Atraso</span><span style="font-weight:500;color:var(--red)">'+fmt(at)+'</span></div></div>'+
     '<div style="margin-top:16px"><a href="contas.html" class="btn btn-g" style="width:100%;justify-content:center">Ver Todos os Lançamentos →</a></div>';
 }
+
 load();
 </script>
 </body>
