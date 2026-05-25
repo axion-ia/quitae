@@ -124,11 +124,20 @@ select.fs:focus{border-color:var(--tx)}
 .leg-i{display:flex;align-items:center;gap:4px}
 .leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
 @media(max-width:768px){.sidebar{display:none}.content{padding:16px}.drawer{width:100%}}
+
 .stats4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .slk{text-decoration:none;display:block;cursor:pointer}
 .pp{background:var(--sf2);border-radius:var(--rs);padding:10px 12px;margin-top:8px;font-size:12px;color:var(--tx2)}
 .pp-r{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dashed var(--bd)}
 .pp-r:last-child{border-bottom:none}
+/* Abas de mês */
+.mes-tabs{display:flex;gap:4px;overflow-x:auto;margin-bottom:16px;padding-bottom:2px}
+.mes-tabs::-webkit-scrollbar{height:4px}
+.mes-tabs::-webkit-scrollbar-track{background:var(--sf2);border-radius:99px}
+.mes-tabs::-webkit-scrollbar-thumb{background:var(--bdm);border-radius:99px}
+.mes-tab{padding:7px 16px;border-radius:var(--rs);font-size:13px;cursor:pointer;border:1px solid var(--bd);background:var(--sf);color:var(--tx2);white-space:nowrap;transition:all .15s;font-family:var(--f)}
+.mes-tab:hover{background:var(--sf2);color:var(--tx)}
+.mes-tab.on{background:var(--tx);color:#fff;border-color:var(--tx)}
 /* Popup categoria */
 .cat-popup{position:fixed;background:#fff;border:1px solid rgba(0,0,0,.14);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:9999;min-width:180px;padding:4px 0;font-family:'DM Sans',sans-serif}
 .cat-popup-item{padding:8px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px}
@@ -155,13 +164,16 @@ select.fs:focus{border-color:var(--tx)}
       <div class="tr"><button class="btn btn-p" onclick="openDrawer(null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo Lançamento</button></div>
     </div>
     <div class="content">
+      <!-- KPIs do mês selecionado -->
       <div class="stats4">
-        <div class="slk" onclick="qFiltro('atrasado')"><div class="stat"><div class="stat-lbl">Em Atraso</div><div class="stat-val" id="kv-at" style="color:var(--red)">R$ 0</div><div class="stat-sub" id="ks-at">0 títulos</div></div></div>
-        <div class="slk" onclick="qFiltro('hoje')"><div class="stat"><div class="stat-lbl">Vencem Hoje</div><div class="stat-val" id="kv-hj" style="color:var(--ora)">R$ 0</div><div class="stat-sub" id="ks-hj">0 títulos</div></div></div>
-        <div class="slk" onclick="qFiltro('todos')"><div class="stat"><div class="stat-lbl">Total em Aberto</div><div class="stat-val" id="kv-ab">R$ 0</div><div class="stat-sub" id="ks-ab">0 títulos</div></div></div>
-        <div class="slk" onclick="qFiltro('pago')"><div class="stat"><div class="stat-lbl">Pagos no Mês</div><div class="stat-val" id="kv-pg" style="color:var(--grn)">R$ 0</div><div class="stat-sub" id="ks-pg">0 títulos</div></div></div>
+        <div class="slk" onclick="setFiltroSt('atrasado')"><div class="stat"><div class="stat-lbl">Em Atraso</div><div class="stat-val" id="kv-at" style="color:var(--red)">R$ 0</div><div class="stat-sub" id="ks-at">0 títulos</div></div></div>
+        <div class="slk" onclick="setFiltroSt('hoje')"><div class="stat"><div class="stat-lbl">Vencem Hoje</div><div class="stat-val" id="kv-hj" style="color:var(--ora)">R$ 0</div><div class="stat-sub" id="ks-hj">0 títulos</div></div></div>
+        <div class="slk" onclick="setFiltroSt('pendente')"><div class="stat"><div class="stat-lbl">Total em Aberto</div><div class="stat-val" id="kv-ab">R$ 0</div><div class="stat-sub" id="ks-ab">0 títulos</div></div></div>
+        <div class="slk" onclick="setFiltroSt('pago')"><div class="stat"><div class="stat-lbl">Pagos no Mês</div><div class="stat-val" id="kv-pg" style="color:var(--grn)">R$ 0</div><div class="stat-sub" id="ks-pg">0 títulos</div></div></div>
       </div>
-      <!-- Filtros -->
+      <!-- Abas de mês -->
+      <div class="mes-tabs" id="mes-tabs"></div>
+      <!-- Filtros secundários -->
       <div class="fbar">
         <div class="sw"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input class="si" id="busca" placeholder="Buscar por descrição ou fornecedor..." oninput="render()"></div>
         <select class="fs" id="f-st" onchange="render()">
@@ -177,15 +189,8 @@ select.fs:focus{border-color:var(--tx)}
           <option value="variavel">Despesa Variável</option>
           <option value="investimento">Investimento</option>
         </select>
-        <select class="fs" id="f-per" onchange="render()">
-          <option value="30" selected>Próximos 30 Dias</option>
-          <option value="hoje">Vence Hoje</option>
-          <option value="7">Próximos 7 Dias</option>
-          <option value="mes">Este Mês</option>
-          <option value="atrasado">Somente Atrasados</option>
-          <option value="todos">Qualquer Data</option>
-        </select>
       </div>
+      <!-- Tabela -->
       <div class="tcard">
         <div class="tcard-top"><span class="tcard-cnt" id="cnt">0 registros</span><button class="btn btn-g" style="font-size:12px;padding:5px 12px" onclick="exportCSV()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar CSV</button></div>
         <div style="overflow-x:auto">
@@ -195,14 +200,14 @@ select.fs:focus{border-color:var(--tx)}
           </table>
           <div class="empty" id="empty" style="display:none">
             <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" width="40" height="40"><path d="M14 2H6a2 2 0 00-2 2v36a2 2 0 002 2h28a2 2 0 002-2V14L26 2z"/><polyline points="26 2 26 14 38 14"/></svg>
-            <p style="font-weight:500;margin-bottom:4px">Nenhum Lançamento Encontrado</p><p>Ajuste os filtros ou adicione um novo lançamento.</p>
+            <p style="font-weight:500;margin-bottom:4px">Nenhum Lançamento Encontrado</p>
+            <p>Ajuste os filtros ou adicione um novo lançamento.</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-
 <!-- Drawer -->
 <div class="ov" id="ov" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
@@ -214,9 +219,7 @@ select.fs:focus{border-color:var(--tx)}
       <div class="fg"><label>Valor Total <span class="req">*</span></label><input id="f-val" type="number" min="0.01" step="0.01" placeholder="0,00" oninput="prevParc()"></div>
       <div class="fg"><label>Vencimento <span class="req">*</span></label><input id="f-venc" type="date" oninput="prevParc()"></div>
     </div>
-    <div class="r2">
-      <div class="fg"><label>Forma de Pagamento</label><select id="f-forma"><option value="boleto">Boleto</option><option value="pix">PIX</option><option value="ted">TED / DOC</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="outro">Outro</option></select></div>
-    </div>
+    <div class="fg"><label>Forma de Pagamento</label><select id="f-forma"><option value="boleto">Boleto</option><option value="pix">PIX</option><option value="ted">TED / DOC</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="outro">Outro</option></select></div>
     <div class="fg"><label>Fornecedor / Credor</label><input id="f-forn" placeholder="Nome do fornecedor" maxlength="100"></div>
     <div class="fg"><label>Nº Documento / NF</label><input id="f-doc" placeholder="Ex: NF-4821" maxlength="60"></div>
     <div class="fg"><label>Observações</label><textarea id="f-obs" placeholder="Informações adicionais..."></textarea></div>
@@ -228,12 +231,12 @@ select.fs:focus{border-color:var(--tx)}
     </div>
     <div id="pp"></div>
     <hr class="div">
-    <div class="ssec">Recorrência (Despesa Fixa)</div>
+    <div class="ssec">Recorrência Mensal</div>
     <div class="fg">
-      <label>Repetir automaticamente todo mês?</label>
+      <label>Repetir todo mês automaticamente?</label>
       <select id="f-recorr" onchange="toggleRecorr()"><option value="nao">Não</option><option value="sim">Sim — gerar para os próximos meses</option></select>
     </div>
-    <div class="fg" id="f-recorr-meses-wrap" style="display:none">
+    <div class="fg" id="f-recorr-wrap" style="display:none">
       <label>Por quantos meses?</label>
       <select id="f-recorr-meses"><option value="3">3 meses</option><option value="6">6 meses</option><option value="12">12 meses</option><option value="24">24 meses</option></select>
     </div>
@@ -246,7 +249,6 @@ select.fs:focus{border-color:var(--tx)}
     </button>
   </div>
 </div>
-
 <!-- Modal baixa -->
 <div class="mbg" id="m-baixa"><div class="modal">
   <h3>Registrar Pagamento</h3>
@@ -258,17 +260,15 @@ select.fs:focus{border-color:var(--tx)}
   </div>
   <div class="mbtns"><button class="btn btn-g" onclick="closeBaixa()">Cancelar</button><button class="btn btn-p" onclick="confBaixa()">Confirmar Pagamento</button></div>
 </div></div>
-
 <!-- Modal excluir -->
 <div class="mbg" id="m-del"><div class="modal"><h3>Excluir Lançamento?</h3><p id="del-msg"></p><div class="mbtns"><button class="btn btn-g" onclick="closeDel()">Cancelar</button><button class="btn btn-d" onclick="confDel()">Excluir</button></div></div></div>
-
 <div id="toast"></div>
-
 <script>
 (function(){try{var x=localStorage.getItem('quitae_auth');if(!x){window.location.href='index.html';return;}var d=JSON.parse(x);if(Date.now()>d.e){localStorage.removeItem('quitae_auth');window.location.href='index.html';}}catch(e){window.location.href='index.html';}})();
 
 var CK='fincontrol_contas',KK='fincontrol_categorias';
 var contas=[],cats=[],editId=null,baixaId=null,delId=null;
+var mesSel=''; // YYYY-MM do mês selecionado
 var hoje=new Date();hoje.setHours(0,0,0,0);
 
 function fmt(v){return 'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -281,56 +281,100 @@ function uid(){return Math.random().toString(36).slice(2,9);}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function getCat(id){return cats.find(function(c){return c.id===id;})||null;}
 function st(c){if(c.status==='pago'||c.status==='cancelado')return c.status;return diff(c.vencimento)>0?'atrasado':'pendente';}
+function getTipo(c){if(c.catId){var cat=getCat(c.catId);if(cat)return cat.tipo;}return c.tipoDespesa||'';}
+function mesKey(s){return s.slice(0,7);}
+function mesLabel(k){var d=new Date(k+'-01T00:00:00');return d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'}).replace(/^\w/,function(c){return c.toUpperCase();});}
 function save(){localStorage.setItem(CK,JSON.stringify(contas));}
 
 function load(){
   var rc=localStorage.getItem(CK);contas=rc?JSON.parse(rc):[];
   var rk=localStorage.getItem(KK);cats=rk?JSON.parse(rk):[];
-  render();kpis();
+  // Define mês selecionado como mês atual se existir, senão o primeiro
+  var mesAtual=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0');
+  var meses=getMeses();
+  mesSel=meses.indexOf(mesAtual)!==-1?mesAtual:(meses[0]||mesAtual);
+  renderTabs();
+  render();
+}
+
+function getMeses(){
+  var set={};
+  contas.forEach(function(c){set[mesKey(c.vencimento)]=1;});
+  return Object.keys(set).sort();
+}
+
+function renderTabs(){
+  var meses=getMeses();
+  var mesAtual=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0');
+  // Garante que o mês atual sempre aparece
+  if(meses.indexOf(mesAtual)===-1)meses.push(mesAtual);
+  meses.sort();
+  var tabs=document.getElementById('mes-tabs');
+  tabs.innerHTML=meses.map(function(k){
+    return '<button class="mes-tab'+(k===mesSel?' on':'')+'" onclick="selMes(\''+k+'\')">'+mesLabel(k)+'</button>';
+  }).join('');
+}
+
+function selMes(k){
+  mesSel=k;
+  renderTabs();
+  render();
+}
+
+function setFiltroSt(s){
+  if(s==='atrasado')document.getElementById('f-st').value='atrasado';
+  else if(s==='hoje')document.getElementById('f-st').value='pendente';
+  else if(s==='pendente')document.getElementById('f-st').value='pendente';
+  else if(s==='pago')document.getElementById('f-st').value='pago';
+  render();
 }
 
 function filtrar(){
   var b=document.getElementById('busca').value.toLowerCase();
   var sv=document.getElementById('f-st').value;
   var tv=document.getElementById('f-tipo').value;
-  var pv=document.getElementById('f-per').value;
   return contas.filter(function(c){
+    // Filtra pelo mês selecionado
+    if(mesKey(c.vencimento)!==mesSel)return false;
     var s2=st(c);
     if(b&&!c.descricao.toLowerCase().includes(b)&&!(c.fornecedor||'').toLowerCase().includes(b))return false;
-    if(sv!=='todos'&&s2!==sv)return false;
-    // Filtro por tipo de despesa via categoria
-    if(tv!=='todos'){
-      var cat=c.catId?getCat(c.catId):null;
-      var tipo=cat?cat.tipo:(c.tipoDespesa||'');
-      if(tipo!==tv)return false;
-    }
-    var d2=new Date(c.vencimento+'T00:00:00');
-    if(pv==='hoje'&&diff(c.vencimento)!==0)return false;
-    else if(pv==='atrasado'&&diff(c.vencimento)<=0)return false;
-    else if(pv==='7'&&(d2<hoje||d2>addD(hoje,7)))return false;
-    else if(pv==='30'&&(d2<addD(hoje,-90)||d2>addD(hoje,30)))return false;
-    else if(pv==='mes'&&(d2.getMonth()!==hoje.getMonth()||d2.getFullYear()!==hoje.getFullYear()))return false;
+    if(sv==='atrasado'&&s2!=='atrasado')return false;
+    else if(sv==='pendente'&&s2!=='pendente')return false;
+    else if(sv==='pago'&&s2!=='pago')return false;
+    else if(sv==='cancelado'&&s2!=='cancelado')return false;
+    if(tv!=='todos'){var tipo=getTipo(c);if(tipo!==tv)return false;}
     return true;
   });
 }
 
 function render(){
-  var rc=localStorage.getItem(KK);cats=rc?JSON.parse(rc):[];
-  var l=filtrar().sort(function(a,b){return a.vencimento.localeCompare(b.vencimento);});
+  cats=JSON.parse(localStorage.getItem(KK)||'[]');
+  var lista=filtrar().sort(function(a,b){return a.vencimento.localeCompare(b.vencimento);});
   var tb=document.getElementById('tbl'),em=document.getElementById('empty');
-  document.getElementById('cnt').textContent=l.length+' registro'+(l.length!==1?'s':'');
-  if(!l.length){tb.innerHTML='';em.style.display='';return;}
+  document.getElementById('cnt').textContent=lista.length+' registro'+(lista.length!==1?'s':'');
+
+  // KPIs do mês selecionado
+  var doMes=contas.filter(function(c){return mesKey(c.vencimento)===mesSel;});
+  var at=doMes.filter(function(c){return st(c)==='atrasado';});
+  var hj=doMes.filter(function(c){return st(c)!=='pago'&&st(c)!=='cancelado'&&diff(c.vencimento)===0;});
+  var ab=doMes.filter(function(c){var s=st(c);return s!=='pago'&&s!=='cancelado';});
+  var pg=doMes.filter(function(c){return c.status==='pago';});
+  function set(k,v,n){document.getElementById('kv-'+k).textContent=fmt(v);document.getElementById('ks-'+k).textContent=n+' título'+(n!==1?'s':'');}
+  set('at',at.reduce(function(s,c){return s+c.valor;},0),at.length);
+  set('hj',hj.reduce(function(s,c){return s+c.valor;},0),hj.length);
+  set('ab',ab.reduce(function(s,c){return s+c.valor;},0),ab.length);
+  set('pg',pg.reduce(function(s,c){return s+(c.valorPago||c.valor);},0),pg.length);
+
+  if(!lista.length){tb.innerHTML='';em.style.display='';return;}
   em.style.display='none';
   var SB={pago:'bdg-s',atrasado:'bdg-d',pendente:'bdg-i',cancelado:'bdg-w'};
   var SL={pago:'Pago',atrasado:'Atrasado',pendente:'Pendente',cancelado:'Cancelado'};
-  tb.innerHTML=l.map(function(c){
+  tb.innerHTML=lista.map(function(c){
     var s2=st(c),cat=c.catId?getCat(c.catId):null,df=diff(c.vencimento);
     var atr=s2==='atrasado'?'<br><span style="font-size:10px;color:var(--red)">'+df+' dia(s) em atraso</span>':'';
     var parc=c.totalParcelas>1?(c.numParcela+'/'+c.totalParcelas):'—';
-    // Categoria clicável
-    var catCell=cat
-      ?'<span style="display:inline-flex;align-items:center;gap:5px"><span class="dot" style="background:'+cat.cor+'"></span>'+esc(cat.nome)+'</span>'
-      :'<span style="font-size:11px;color:var(--blu)">+ Definir</span>';
+    var recTag=c.recorrente?'<span style="font-size:10px;color:var(--blu);margin-left:4px">↻</span>':'';
+    var catCell=cat?'<span style="display:inline-flex;align-items:center;gap:5px"><span class="dot" style="background:'+cat.cor+'"></span>'+esc(cat.nome)+'</span>':'<span style="font-size:11px;color:var(--blu)">+ Definir</span>';
     var ac='';
     if(s2!=='pago'&&s2!=='cancelado')ac+='<button class="btn-i" title="Registrar Pagamento" onclick="openBaixa(\''+c.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg></button>';
     if(s2==='pago')ac+='<button class="btn-i" title="Desfazer Pagamento" style="color:var(--ora)" onclick="desfazer(\''+c.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg></button>';
@@ -338,7 +382,7 @@ function render(){
     ac+='<button class="btn-i" style="color:var(--red)" title="Excluir" onclick="openDel(\''+c.id+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>';
     return '<tr>'+
       '<td>'+fmtD(c.vencimento)+atr+'</td>'+
-      '<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.descricao)+'">'+esc(c.descricao)+'</td>'+
+      '<td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+esc(c.descricao)+'">'+esc(c.descricao)+recTag+'</td>'+
       '<td style="color:var(--tx2);font-size:12px">'+esc(c.fornecedor||'—')+'</td>'+
       '<td onclick="selCat(event,\''+c.id+'\')" style="cursor:pointer">'+catCell+'</td>'+
       '<td style="color:var(--tx3);font-size:12px">'+parc+'</td>'+
@@ -349,31 +393,9 @@ function render(){
   }).join('');
 }
 
-function kpis(){
-  var ab=contas.filter(function(c){var s=st(c);return s!=='pago'&&s!=='cancelado';});
-  var at=contas.filter(function(c){return st(c)==='atrasado';});
-  var hj=contas.filter(function(c){return st(c)!=='pago'&&st(c)!=='cancelado'&&diff(c.vencimento)===0;});
-  var m=hoje.getMonth(),y=hoje.getFullYear();
-  var pg=contas.filter(function(c){return c.status==='pago'&&c.dataPag&&new Date(c.dataPag+'T00:00:00').getMonth()===m&&new Date(c.dataPag+'T00:00:00').getFullYear()===y;});
-  function set(k,v,n){document.getElementById('kv-'+k).textContent=fmt(v);document.getElementById('ks-'+k).textContent=n+' título'+(n!==1?'s':'');}
-  set('at',at.reduce(function(s,c){return s+c.valor;},0),at.length);
-  set('hj',hj.reduce(function(s,c){return s+c.valor;},0),hj.length);
-  set('ab',ab.reduce(function(s,c){return s+c.valor;},0),ab.length);
-  set('pg',pg.reduce(function(s,c){return s+(c.valorPago||c.valor);},0),pg.length);
-}
-
-function qFiltro(t){
-  if(t==='atrasado'){document.getElementById('f-st').value='atrasado';document.getElementById('f-per').value='todos';}
-  else if(t==='hoje'){document.getElementById('f-st').value='pendente';document.getElementById('f-per').value='hoje';}
-  else if(t==='pago'){document.getElementById('f-st').value='pago';document.getElementById('f-per').value='todos';}
-  else{document.getElementById('f-st').value='todos';document.getElementById('f-per').value='30';}
-  render();
-}
-
-// Recorrência toggle
 function toggleRecorr(){
   var v=document.getElementById('f-recorr').value;
-  document.getElementById('f-recorr-meses-wrap').style.display=v==='sim'?'':'none';
+  document.getElementById('f-recorr-wrap').style.display=v==='sim'?'':'none';
 }
 
 function prevParc(){
@@ -384,18 +406,15 @@ function prevParc(){
   var div=document.getElementById('pp');
   if(n<=1||!v||!vc){div.innerHTML='';return;}
   var vp=+(v/n).toFixed(2);
-  var h='<div class="pp"><div style="display:flex;justify-content:space-between;font-weight:500;margin-bottom:4px"><span>Parcela</span><span>Vencimento</span><span>Valor</span></div>';
-  for(var i=0;i<Math.min(n,6);i++){
-    var d=fmtD(iso(addD(new Date(vc+'T00:00:00'),i*inv)));
-    h+='<div class="pp-r"><span>'+(i+1)+'/'+n+'</span><span>'+d+'</span><span>'+fmt(vp)+'</span></div>';
-  }
+  var h='<div class="pp"><div style="display:flex;justify-content:space-between;font-weight:500;margin-bottom:4px;font-size:11px;color:var(--tx3)"><span>Parcela</span><span>Vencimento</span><span>Valor</span></div>';
+  for(var i=0;i<Math.min(n,6);i++){var d=fmtD(iso(addD(new Date(vc+'T00:00:00'),i*inv)));h+='<div class="pp-r"><span>'+(i+1)+'/'+n+'</span><span>'+d+'</span><span>'+fmt(vp)+'</span></div>';}
   if(n>6)h+='<div style="text-align:center;color:var(--tx3);font-size:11px;padding-top:4px">+ '+(n-6)+' parcelas</div>';
   div.innerHTML=h+'</div>';
 }
 
 function openDrawer(id){
   editId=id;
-  var rc=localStorage.getItem(KK);cats=rc?JSON.parse(rc):[];
+  cats=JSON.parse(localStorage.getItem(KK)||'[]');
   document.getElementById('dt').textContent=id?'Editar Lançamento':'Novo Lançamento';
   document.getElementById('btn-sv').textContent=id?'Salvar Alterações':'Salvar';
   if(id){
@@ -404,26 +423,24 @@ function openDrawer(id){
     document.getElementById('f-val').value=c.valor;
     document.getElementById('f-venc').value=c.vencimento;
     document.getElementById('f-forma').value=c.forma||'boleto';
-    
     document.getElementById('f-forn').value=c.fornecedor||'';
     document.getElementById('f-doc').value=c.doc||'';
     document.getElementById('f-obs').value=c.obs||'';
     document.getElementById('f-parc').value='1';
     document.getElementById('f-recorr').value='nao';
-    document.getElementById('f-recorr-meses-wrap').style.display='none';
+    document.getElementById('f-recorr-wrap').style.display='none';
     document.getElementById('pp').innerHTML='';
   } else {
     document.getElementById('f-desc').value='';
     document.getElementById('f-val').value='';
-    document.getElementById('f-venc').value=iso(addD(hoje,7));
+    document.getElementById('f-venc').value=iso(addD(hoje,1));
     document.getElementById('f-forma').value='boleto';
-    
     document.getElementById('f-forn').value='';
     document.getElementById('f-doc').value='';
     document.getElementById('f-obs').value='';
     document.getElementById('f-parc').value='1';
     document.getElementById('f-recorr').value='nao';
-    document.getElementById('f-recorr-meses-wrap').style.display='none';
+    document.getElementById('f-recorr-wrap').style.display='none';
     document.getElementById('pp').innerHTML='';
   }
   document.getElementById('ov').classList.add('open');
@@ -448,7 +465,6 @@ function saveConta(){
   if(!ok){toast('Preencha os campos obrigatórios.',true);return;}
 
   var forma=document.getElementById('f-forma').value;
-  var tipoDespesa='';
   var forn=document.getElementById('f-forn').value.trim();
   var doc=document.getElementById('f-doc').value.trim();
   var obs=document.getElementById('f-obs').value.trim();
@@ -459,93 +475,80 @@ function saveConta(){
   var vp=+(val/np).toFixed(2);
 
   if(editId){
-    var c=contas.find(function(x){return x.id===editId;});
-    Object.assign(c,{descricao:desc,valor:val,vencimento:venc,tipoDespesa:tipoDespesa,forma:forma,fornecedor:forn,doc:doc,obs:obs});
+    var cx=contas.find(function(x){return x.id===editId;});
+    Object.assign(cx,{descricao:desc,valor:val,vencimento:venc,forma:forma,fornecedor:forn,doc:doc,obs:obs});
     toast('Lançamento atualizado.');
   } else {
     // Parcelamento
     for(var i=0;i<np;i++){
       var vd=iso(addD(new Date(venc+'T00:00:00'),i*inv));
-      contas.unshift({id:uid(),descricao:desc,valor:vp,vencimento:vd,tipoDespesa:tipoDespesa,forma:forma,fornecedor:forn,doc:doc,obs:obs,status:'pendente',valorPago:0,numParcela:i+1,totalParcelas:np});
+      contas.unshift({id:uid(),descricao:desc,valor:vp,vencimento:vd,forma:forma,fornecedor:forn,doc:doc,obs:obs,status:'pendente',valorPago:0,numParcela:i+1,totalParcelas:np});
     }
     // Recorrência mensal
     if(recorr==='sim'&&np===1){
       for(var mi=1;mi<recorrMeses;mi++){
         var vdm=iso(addM(new Date(venc+'T00:00:00'),mi));
-        contas.unshift({id:uid(),descricao:desc,valor:val,vencimento:vdm,tipoDespesa:tipoDespesa,forma:forma,fornecedor:forn,doc:doc,obs:obs,status:'pendente',valorPago:0,numParcela:1,totalParcelas:1,recorrente:true});
+        contas.unshift({id:uid(),descricao:desc,valor:val,vencimento:vdm,forma:forma,fornecedor:forn,doc:doc,obs:obs,status:'pendente',valorPago:0,numParcela:1,totalParcelas:1,recorrente:true});
       }
-      save();
-      toast('Conta lançada para '+recorrMeses+' meses.');
+      toast('Conta gerada para '+recorrMeses+' meses.');
     } else {
       toast(np>1?np+' parcelas lançadas.':'Lançamento criado.');
     }
   }
-  save();closeDrawer();render();kpis();
+  save();
+  closeDrawer();
+  // Atualiza mês selecionado para o mês do vencimento lançado
+  mesSel=mesKey(venc);
+  renderTabs();
+  render();
 }
 
 // Popup categoria inline
-function selCat(e, contaId){
+function selCat(e,contaId){
   e.stopPropagation();
-  var old=document.getElementById('cat-popup');
-  if(old){old.remove();return;}
+  var old=document.getElementById('cat-popup');if(old){old.remove();return;}
   var cats2=JSON.parse(localStorage.getItem(KK)||'[]');
-  var td=e.currentTarget;
-  var rect=td.getBoundingClientRect();
-  var popup=document.createElement('div');
-  popup.id='cat-popup';
-  popup.className='cat-popup';
-  popup.style.top=(rect.bottom+4)+'px';
-  popup.style.left=rect.left+'px';
-
-  var opt0=document.createElement('div');
-  opt0.className='cat-popup-item';
-  opt0.style.color='var(--tx3)';
-  opt0.textContent='Sem Categoria';
+  var td=e.currentTarget;var rect=td.getBoundingClientRect();
+  var popup=document.createElement('div');popup.id='cat-popup';popup.className='cat-popup';
+  popup.style.top=(rect.bottom+4)+'px';popup.style.left=rect.left+'px';
+  var opt0=document.createElement('div');opt0.className='cat-popup-item';opt0.style.color='var(--tx3)';opt0.textContent='Sem Categoria';
   opt0.onclick=function(ev){ev.stopPropagation();setCat(contaId,null);popup.remove();}
   popup.appendChild(opt0);
-
   cats2.forEach(function(cat){
-    var div=document.createElement('div');
-    div.className='cat-popup-item';
+    var div=document.createElement('div');div.className='cat-popup-item';
     div.innerHTML='<span style="width:8px;height:8px;border-radius:50%;background:'+cat.cor+';display:inline-block;flex-shrink:0"></span>'+esc(cat.nome);
     div.onclick=function(ev){ev.stopPropagation();setCat(contaId,cat.id);popup.remove();}
     popup.appendChild(div);
   });
-
   document.body.appendChild(popup);
-  setTimeout(function(){
-    document.addEventListener('click',function rem(){popup.remove();document.removeEventListener('click',rem);});
-  },0);
+  setTimeout(function(){document.addEventListener('click',function rem(){popup.remove();document.removeEventListener('click',rem);});},0);
 }
 
 function setCat(contaId,catId){
   var c=contas.find(function(x){return x.id===contaId;});
-  if(c){c.catId=catId;save();render();kpis();}
+  if(c){c.catId=catId;save();render();}
 }
 
 function openBaixa(id){
   baixaId=id;var c=contas.find(function(x){return x.id===id;});
   document.getElementById('baixa-inf').textContent=c.descricao+' · '+fmt(c.valor)+' · Venc. '+fmtD(c.vencimento);
-  document.getElementById('b-val').value=c.valor;
-  document.getElementById('b-dt').value=iso(hoje);
-  document.getElementById('b-forma').value=c.forma||'boleto';
+  document.getElementById('b-val').value=c.valor;document.getElementById('b-dt').value=iso(hoje);document.getElementById('b-forma').value=c.forma||'boleto';
   document.getElementById('m-baixa').classList.add('open');
 }
 function closeBaixa(){document.getElementById('m-baixa').classList.remove('open');baixaId=null;}
 function confBaixa(){
-  var v=parseFloat(document.getElementById('b-val').value);
-  var d=document.getElementById('b-dt').value;
+  var v=parseFloat(document.getElementById('b-val').value);var d=document.getElementById('b-dt').value;
   if(!v||v<=0||!d){toast('Preencha valor e data.',true);return;}
   var c=contas.find(function(x){return x.id===baixaId;});
   c.status='pago';c.valorPago=v;c.dataPag=d;c.formaPag=document.getElementById('b-forma').value;
-  save();closeBaixa();render();kpis();toast('Pagamento registrado.');
+  save();closeBaixa();render();toast('Pagamento registrado.');
 }
 
 function desfazer(id){
   if(!confirm('Desfazer pagamento? O título voltará para Pendente.'))return;
   var c=contas.find(function(x){return x.id===id;});
   c.status='pendente';c.valorPago=0;delete c.dataPag;delete c.formaPag;
-  save();render();kpis();toast('Pagamento desfeito.');
+  save();render();toast('Pagamento desfeito.');
 }
 
 function openDel(id){
@@ -554,15 +557,12 @@ function openDel(id){
   document.getElementById('m-del').classList.add('open');
 }
 function closeDel(){document.getElementById('m-del').classList.remove('open');delId=null;}
-function confDel(){contas=contas.filter(function(c){return c.id!==delId;});save();render();kpis();closeDel();toast('Lançamento excluído.');}
+function confDel(){contas=contas.filter(function(c){return c.id!==delId;});save();renderTabs();render();closeDel();toast('Lançamento excluído.');}
 
 function exportCSV(){
   var l=filtrar();
-  var rows=[['Vencimento','Descrição','Fornecedor','Categoria','Tipo','Parcela','Status','Valor','Valor Pago']];
-  l.forEach(function(c){
-    var cat=c.catId?(getCat(c.catId)||{nome:''}).nome:'';
-    rows.push([c.vencimento,c.descricao,c.fornecedor||'',cat,c.tipoDespesa||'',c.totalParcelas>1?(c.numParcela+'/'+c.totalParcelas):'',st(c),c.valor.toFixed(2),(c.valorPago||0).toFixed(2)]);
-  });
+  var rows=[['Vencimento','Descrição','Fornecedor','Categoria','Parcela','Status','Valor','Valor Pago']];
+  l.forEach(function(c){var cat=c.catId?(getCat(c.catId)||{nome:''}).nome:'';rows.push([c.vencimento,c.descricao,c.fornecedor||'',cat,c.totalParcelas>1?(c.numParcela+'/'+c.totalParcelas):'',st(c),c.valor.toFixed(2),(c.valorPago||0).toFixed(2)]);});
   var csv=rows.map(function(r){return r.map(function(v){return '"'+String(v).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));a.download='contas-a-pagar.csv';a.click();
 }
@@ -570,7 +570,6 @@ function exportCSV(){
 function toast(msg,e){var t=document.getElementById('toast');t.textContent=msg;t.className='show'+(e?' err':'');clearTimeout(t._t);t._t=setTimeout(function(){t.className='';},2800);}
 document.getElementById('m-baixa').addEventListener('click',function(e){if(e.target===this)closeBaixa();});
 document.getElementById('m-del').addEventListener('click',function(e){if(e.target===this)closeDel();});
-
 load();
 </script>
 </body>
