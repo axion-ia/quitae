@@ -231,7 +231,7 @@ select.fs:focus{border-color:var(--tx)}
     <div class="ssec">Recorrência (Despesa Fixa)</div>
     <div class="fg">
       <label>Repetir automaticamente todo mês?</label>
-      <select id="f-recorr"><option value="nao">Não</option><option value="sim">Sim — gerar para os próximos meses</option></select>
+      <select id="f-recorr" onchange="toggleRecorr()"><option value="nao">Não</option><option value="sim">Sim — gerar para os próximos meses</option></select>
     </div>
     <div class="fg" id="f-recorr-meses-wrap" style="display:none">
       <label>Por quantos meses?</label>
@@ -371,11 +371,10 @@ function qFiltro(t){
 }
 
 // Recorrência toggle
-document.addEventListener('DOMContentLoaded',function(){
-  document.getElementById('f-recorr').addEventListener('change',function(){
-    document.getElementById('f-recorr-meses-wrap').style.display=this.value==='sim'?'':'none';
-  });
-});
+function toggleRecorr(){
+  var v=document.getElementById('f-recorr').value;
+  document.getElementById('f-recorr-meses-wrap').style.display=v==='sim'?'':'none';
+}
 
 function prevParc(){
   var v=parseFloat(document.getElementById('f-val').value)||0;
@@ -471,10 +470,11 @@ function saveConta(){
     }
     // Recorrência mensal
     if(recorr==='sim'&&np===1){
-      for(var m=1;m<recorrMeses;m++){
-        var vdm=iso(addM(new Date(venc+'T00:00:00'),m));
+      for(var mi=1;mi<recorrMeses;mi++){
+        var vdm=iso(addM(new Date(venc+'T00:00:00'),mi));
         contas.unshift({id:uid(),descricao:desc,valor:val,vencimento:vdm,tipoDespesa:tipoDespesa,forma:forma,fornecedor:forn,doc:doc,obs:obs,status:'pendente',valorPago:0,numParcela:1,totalParcelas:1,recorrente:true});
       }
+      save();
       toast('Conta lançada para '+recorrMeses+' meses.');
     } else {
       toast(np>1?np+' parcelas lançadas.':'Lançamento criado.');
