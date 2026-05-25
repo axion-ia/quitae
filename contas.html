@@ -229,21 +229,18 @@ function load(){
   fillCats();render();kpis();
 }
 function fillCats(){
-  // Popula select do formulário
-  var s=document.getElementById('f-cat');
-  s.innerHTML='<option value="">Sem Categoria</option>';
-  cats.forEach(function(c){var o=document.createElement('option');o.value=c.id;o.textContent=c.nome;s.appendChild(o);});
-  // Popula ou atualiza select do filtro
-  var fb=document.getElementById('f-cat-bar');
-  if(!fb){
-    var ns=document.createElement('select');ns.className='fs';ns.id='f-cat-bar';ns.onchange=render;
-    var o0=document.createElement('option');o0.value='todas';o0.textContent='Todas as Categorias';ns.appendChild(o0);
-    cats.forEach(function(c){var o=document.createElement('option');o.value=c.id;o.textContent=c.nome;ns.appendChild(o);});
-    document.querySelector('.fbar').insertBefore(ns,document.getElementById('f-per'));
-  } else {
-    fb.innerHTML='<option value="todas">Todas as Categorias</option>';
-    cats.forEach(function(c){var o=document.createElement('option');o.value=c.id;o.textContent=c.nome;fb.appendChild(o);});
-  }
+  cats = JSON.parse(localStorage.getItem('fincontrol_categorias') || '[]');
+  var s = document.getElementById('f-cat');
+  if(!s) return;
+  var val = s.value;
+  s.innerHTML = '<option value="">Sem Categoria</option>';
+  cats.forEach(function(c){
+    var o = document.createElement('option');
+    o.value = c.id;
+    o.textContent = c.nome;
+    s.appendChild(o);
+  });
+  if(val) s.value = val;
 }
 function filtrar(){
   var b=document.getElementById('busca').value.toLowerCase();
@@ -305,8 +302,6 @@ function qFiltro(t){
 }
 function openDrawer(id){
   editId=id;
-  // Recarrega categorias do localStorage toda vez que abre o drawer
-  var rk=localStorage.getItem('fincontrol_categorias');cats=rk?JSON.parse(rk):[];
   fillCats();
   document.getElementById('dt').textContent=id?'Editar Lançamento':'Novo Lançamento';
   document.getElementById('btn-sv').textContent=id?'Salvar Alterações':'Salvar';
