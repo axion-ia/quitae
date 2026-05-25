@@ -216,7 +216,6 @@ select.fs:focus{border-color:var(--tx)}
     </div>
     <div class="r2">
       <div class="fg"><label>Forma de Pagamento</label><select id="f-forma"><option value="boleto">Boleto</option><option value="pix">PIX</option><option value="ted">TED / DOC</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="outro">Outro</option></select></div>
-      <div class="fg"><label>Tipo de Despesa</label><select id="f-tdespesa"><option value="">Nenhum</option><option value="fixa">Despesa Fixa</option><option value="variavel">Despesa Variável</option><option value="investimento">Investimento</option></select></div>
     </div>
     <div class="fg"><label>Fornecedor / Credor</label><input id="f-forn" placeholder="Nome do fornecedor" maxlength="100"></div>
     <div class="fg"><label>Nº Documento / NF</label><input id="f-doc" placeholder="Ex: NF-4821" maxlength="60"></div>
@@ -406,7 +405,7 @@ function openDrawer(id){
     document.getElementById('f-val').value=c.valor;
     document.getElementById('f-venc').value=c.vencimento;
     document.getElementById('f-forma').value=c.forma||'boleto';
-    document.getElementById('f-tdespesa').value=c.tipoDespesa||'';
+    
     document.getElementById('f-forn').value=c.fornecedor||'';
     document.getElementById('f-doc').value=c.doc||'';
     document.getElementById('f-obs').value=c.obs||'';
@@ -419,7 +418,7 @@ function openDrawer(id){
     document.getElementById('f-val').value='';
     document.getElementById('f-venc').value=iso(addD(hoje,7));
     document.getElementById('f-forma').value='boleto';
-    document.getElementById('f-tdespesa').value='';
+    
     document.getElementById('f-forn').value='';
     document.getElementById('f-doc').value='';
     document.getElementById('f-obs').value='';
@@ -450,7 +449,7 @@ function saveConta(){
   if(!ok){toast('Preencha os campos obrigatórios.',true);return;}
 
   var forma=document.getElementById('f-forma').value;
-  var tipoDespesa=document.getElementById('f-tdespesa').value;
+  var tipoDespesa='';
   var forn=document.getElementById('f-forn').value.trim();
   var doc=document.getElementById('f-doc').value.trim();
   var obs=document.getElementById('f-obs').value.trim();
