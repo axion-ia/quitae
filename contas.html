@@ -187,7 +187,7 @@ select.fs:focus{border-color:var(--tx)}
     <div class="ssec">Dados da Conta</div>
     <div class="fg"><label>Descrição <span class="req">*</span></label><input id="f-desc" placeholder="Ex: Aluguel Sede Maio/2026" maxlength="120"></div>
     <div class="r2"><div class="fg"><label>Valor <span class="req">*</span></label><input id="f-val" type="number" min="0.01" step="0.01" placeholder="0,00"></div><div class="fg"><label>Vencimento <span class="req">*</span></label><input id="f-venc" type="date"></div></div>
-    <div class="r2"><div class="fg"><label>Categoria</label><select id="f-cat" style="width:100%;padding:8px 12px;border:1px solid rgba(0,0,0,.14);border-radius:6px;font-family:var(--f);font-size:13px;color:var(--tx);background:#fff;outline:none;height:36px;position:relative;z-index:9999"><option value="">Sem Categoria</option></select></div><div class="fg"><label>Forma de Pagamento</label><select id="f-forma"><option value="boleto">Boleto</option><option value="pix">PIX</option><option value="ted">TED / DOC</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="outro">Outro</option></select></div></div>
+    <div class="r2"><div class="fg"><label>Forma de Pagamento</label><select id="f-forma"><option value="boleto">Boleto</option><option value="pix">PIX</option><option value="ted">TED / DOC</option><option value="cartao">Cartão</option><option value="dinheiro">Dinheiro</option><option value="outro">Outro</option></select></div></div>
     <div class="fg"><label>Fornecedor / Credor</label><input id="f-forn" placeholder="Nome do fornecedor" maxlength="100"></div>
     <div class="fg"><label>Nº Documento / NF</label><input id="f-doc" placeholder="Ex: NF-4821" maxlength="60"></div>
     <div class="fg"><label>Observações</label><textarea id="f-obs" placeholder="Informações adicionais..."></textarea></div>
@@ -335,7 +335,7 @@ function saveConta(){
   if(!val||val<=0){document.getElementById('f-val').style.borderColor='var(--red)';ok=false;}else{document.getElementById('f-val').style.borderColor='';}
   if(!venc){document.getElementById('f-venc').style.borderColor='var(--red)';ok=false;}else{document.getElementById('f-venc').style.borderColor='';}
   if(!ok){toast('Preencha os campos obrigatórios.',true);return;}
-  var catId=document.getElementById('f-cat').value;
+  var catId=null;
   var forma=document.getElementById('f-forma').value;
   var forn=document.getElementById('f-forn').value.trim();
   var doc=document.getElementById('f-doc').value.trim();
@@ -385,6 +385,49 @@ function toast(msg,e){var t=document.getElementById('toast');t.textContent=msg;t
 document.getElementById('m-baixa').addEventListener('click',function(e){if(e.target===this)closeBaixa();});
 document.getElementById('m-del').addEventListener('click',function(e){if(e.target===this)closeDel();});
 load();
+
+// Popup de seleção de categoria inline
+function selCat(e, contaId) {
+  e.stopPropagation();
+  // Remove popup existente
+  var old = document.getElementById('cat-popup');
+  if (old) { old.remove(); return; }
+
+  var cats2 = JSON.parse(localStorage.getItem('fincontrol_categorias') || '[]');
+  var td = e.currentTarget;
+  var rect = td.getBoundingClientRect();
+
+  var popup = document.createElement('div');
+  popup.id = 'cat-popup';
+  popup.style.cssText = 'position:fixed;top:'+(rect.bottom+4)+'px;left:'+rect.left+'px;background:#fff;border:1px solid rgba(0,0,0,.14);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:9999;min-width:180px;padding:4px 0;font-family:DM Sans,sans-serif';
+
+  var opt0 = document.createElement('div');
+  opt0.textContent = 'Sem Categoria';
+  opt0.style.cssText = 'padding:8px 14px;font-size:13px;cursor:pointer;color:#9b9b92';
+  opt0.onmouseover = function(){this.style.background='#f0efe9';}
+  opt0.onmouseout = function(){this.style.background='';}
+  opt0.onclick = function(ev){ev.stopPropagation();setCat(contaId, null);popup.remove();}
+  popup.appendChild(opt0);
+
+  cats2.forEach(function(cat) {
+    var div = document.createElement('div');
+    div.style.cssText = 'padding:8px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px';
+    div.innerHTML = '<span style="width:8px;height:8px;border-radius:50%;background:'+cat.cor+';display:inline-block;flex-shrink:0"></span>'+cat.nome;
+    div.onmouseover = function(){this.style.background='#f0efe9';}
+    div.onmouseout = function(){this.style.background='';}
+    div.onclick = function(ev){ev.stopPropagation();setCat(contaId, cat.id);popup.remove();}
+    popup.appendChild(div);
+  });
+
+  document.body.appendChild(popup);
+  setTimeout(function(){document.addEventListener('click', function rem(){popup.remove();document.removeEventListener('click',rem);});},0);
+}
+
+function setCat(contaId, catId) {
+  var conta = contas.find(function(x){return x.id===contaId;});
+  if (conta) { conta.catId = catId; save(); render(); kpis(); }
+}
+
 </script>
 </body>
 </html>
