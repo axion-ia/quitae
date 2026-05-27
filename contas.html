@@ -429,10 +429,15 @@ function openSelMes(){
   }
   var grid=document.getElementById('sel-meses-grid');
   var mesAtual=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0');
-  grid.innerHTML=meses.map(function(k){
+  grid.innerHTML='';
+  meses.forEach(function(k){
     var isAtual=k===mesAtual;
-    return '<button onclick="confirmarMes(''+k+'')" style="padding:10px;border-radius:var(--rs);border:1px solid '+(isAtual?'var(--tx)':'var(--bdm)')+';background:'+(isAtual?'var(--tx)':'var(--sf)')+';color:'+(isAtual?'#fff':'var(--tx)')+';font-family:var(--f);font-size:13px;cursor:pointer;transition:all .15s" onmouseover="if(!this.dataset.cur){this.style.background='var(--sf2)'}" onmouseout="if(!this.dataset.cur){this.style.background='var(--sf)'}" '+(isAtual?'data-cur="1"':'')+'>'+mesLabel(k)+'</button>';
-  }).join('');
+    var btn=document.createElement('button');
+    btn.textContent=mesLabel(k);
+    btn.style.cssText='padding:10px;border-radius:6px;border:1px solid '+(isAtual?'#1a1a18':'rgba(0,0,0,.14)')+';background:'+(isAtual?'#1a1a18':'#fff')+';color:'+(isAtual?'#fff':'#1a1a18')+';font-family:DM Sans,sans-serif;font-size:13px;cursor:pointer;width:100%;transition:all .15s';
+    (function(key){btn.onclick=function(){confirmarMes(key);};})(k);
+    grid.appendChild(btn);
+  });
   document.getElementById('m-selmes').classList.add('open');
 }
 
