@@ -161,7 +161,7 @@ select.fs:focus{border-color:var(--tx)}
   <div class="main">
     <div class="topbar">
       <div class="tl"><div class="bc">Principal › <b>Contas a Pagar</b></div><h1>Contas a Pagar</h1></div>
-      <div class="tr"><button class="btn btn-p" onclick="openDrawer(null)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo Lançamento</button></div>
+      <div class="tr"><button class="btn btn-p" onclick="openSelMes()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo Lançamento</button></div>
     </div>
     <div class="content">
       <!-- KPIs do mês selecionado -->
@@ -262,6 +262,13 @@ select.fs:focus{border-color:var(--tx)}
 </div></div>
 <!-- Modal excluir -->
 <div class="mbg" id="m-del"><div class="modal"><h3>Excluir Lançamento?</h3><p id="del-msg"></p><div class="mbtns"><button class="btn btn-g" onclick="closeDel()">Cancelar</button><button class="btn btn-d" onclick="confDel()">Excluir</button></div></div></div>
+<!-- Modal seleção de mês -->
+<div class="mbg" id="m-selmes"><div class="modal" style="width:480px">
+  <h3>Selecione o Mês do Lançamento</h3>
+  <p style="font-size:13px;color:var(--tx2);margin-bottom:20px">Em qual mês deseja registrar este lançamento?</p>
+  <div id="sel-meses-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px"></div>
+  <div class="mbtns"><button class="btn btn-g" onclick="document.getElementById('m-selmes').classList.remove('open')">Cancelar</button></div>
+</div></div>
 <div id="toast"></div>
 <script>
 (function(){try{var x=localStorage.getItem('quitae_auth');if(!x){window.location.href='index.html';return;}var d=JSON.parse(x);if(Date.now()>d.e){localStorage.removeItem('quitae_auth');window.location.href='index.html';}}catch(e){window.location.href='index.html';}})();
@@ -412,7 +419,31 @@ function prevParc(){
   div.innerHTML=h+'</div>';
 }
 
-function openDrawer(id){
+function openSelMes(){
+  // Gera lista de meses: últimos 2 meses + próximos 12
+  var meses=[];
+  for(var i=-2;i<=12;i++){
+    var d=new Date(hoje.getFullYear(),hoje.getMonth()+i,1);
+    var k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    meses.push(k);
+  }
+  var grid=document.getElementById('sel-meses-grid');
+  var mesAtual=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0');
+  grid.innerHTML=meses.map(function(k){
+    var isAtual=k===mesAtual;
+    return '<button onclick="confirmarMes(''+k+'')" style="padding:10px;border-radius:var(--rs);border:1px solid '+(isAtual?'var(--tx)':'var(--bdm)')+';background:'+(isAtual?'var(--tx)':'var(--sf)')+';color:'+(isAtual?'#fff':'var(--tx)')+';font-family:var(--f);font-size:13px;cursor:pointer;transition:all .15s" onmouseover="if(!this.dataset.cur){this.style.background='var(--sf2)'}" onmouseout="if(!this.dataset.cur){this.style.background='var(--sf)'}" '+(isAtual?'data-cur="1"':'')+'>'+mesLabel(k)+'</button>';
+  }).join('');
+  document.getElementById('m-selmes').classList.add('open');
+}
+
+function confirmarMes(k){
+  document.getElementById('m-selmes').classList.remove('open');
+  // Define vencimento como dia 1 do mês selecionado (usuário ajusta)
+  var d=new Date(k+'-01T00:00:00');
+  openDrawer(null, iso(d));
+}
+
+function openDrawer(id, vencPreset){
   editId=id;
   cats=JSON.parse(localStorage.getItem(KK)||'[]');
   document.getElementById('dt').textContent=id?'Editar Lançamento':'Novo Lançamento';
@@ -433,7 +464,7 @@ function openDrawer(id){
   } else {
     document.getElementById('f-desc').value='';
     document.getElementById('f-val').value='';
-    document.getElementById('f-venc').value=iso(addD(hoje,1));
+    document.getElementById('f-venc').value=vencPreset||iso(addD(hoje,1));
     document.getElementById('f-forma').value='boleto';
     document.getElementById('f-forn').value='';
     document.getElementById('f-doc').value='';
@@ -526,7 +557,20 @@ function selCat(e,contaId){
 
 function setCat(contaId,catId){
   var c=contas.find(function(x){return x.id===contaId;});
-  if(c){c.catId=catId;save();render();}
+  if(!c)return;
+  // Se recorrente, aplica a todos da mesma série
+  if(c.recorrente||c.totalParcelas>1){
+    var desc=c.descricao;
+    contas.forEach(function(x){
+      if(x.descricao===desc&&(x.recorrente||x.totalParcelas>1)){
+        x.catId=catId;
+      }
+    });
+    toast('Categoria aplicada a todos os meses da série.');
+  } else {
+    c.catId=catId;
+  }
+  save();render();
 }
 
 function openBaixa(id){
@@ -569,6 +613,7 @@ function exportCSV(){
 
 function toast(msg,e){var t=document.getElementById('toast');t.textContent=msg;t.className='show'+(e?' err':'');clearTimeout(t._t);t._t=setTimeout(function(){t.className='';},2800);}
 document.getElementById('m-baixa').addEventListener('click',function(e){if(e.target===this)closeBaixa();});
+document.getElementById('m-selmes').addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
 document.getElementById('m-del').addEventListener('click',function(e){if(e.target===this)closeDel();});
 load();
 </script>
