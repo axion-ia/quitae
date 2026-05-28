@@ -160,8 +160,8 @@ select.fs:focus{border-color:var(--tx)}
     </div>
     <div class="content">
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:12px 16px;align-items:center">
-        <span style="font-size:12px;color:var(--tx3)">Período:</span>
-        <select class="fs" id="f-per" onchange="atualizar()"><option value="30">Últimos 30 Dias</option><option value="60">Últimos 60 Dias</option><option value="90" selected>Últimos 90 Dias</option><option value="180">Últimos 180 Dias</option><option value="365">Último Ano</option></select>
+        <span style="font-size:12px;color:var(--tx3)">Mês:</span>
+        <select class="fs" id="f-mes" onchange="atualizar()"><option value="todos">Todos os Meses</option></select>
         <span style="font-size:12px;color:var(--tx3);margin-left:8px">Status:</span>
         <select class="fs" id="f-st" onchange="atualizar()"><option value="todos">Todos</option><option value="pendente">Pendente</option><option value="pago">Pago</option><option value="atrasado">Atrasado</option></select>
       </div>
@@ -209,12 +209,35 @@ function ml(d){return d.toLocaleDateString('pt-BR',{month:'short',year:'2-digit'
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function gc(id){return cats.find(function(c){return c.id===id;})||null;}
 function st(c){if(c.status==='pago'||c.status==='cancelado')return c.status;return diff(c.vencimento)>0?'atrasado':'pendente';}
-function load(){var rc=localStorage.getItem(CK);contas=rc?JSON.parse(rc):[];var rk=localStorage.getItem(KK);cats=rk?JSON.parse(rk):[];atualizar();}
+function fillMeses(){
+  var set={};
+  contas.forEach(function(c){set[c.vencimento.slice(0,7)]=1;});
+  var meses=Object.keys(set).sort().reverse();
+  var sel=document.getElementById('f-mes');
+  sel.innerHTML='<option value="todos">Todos os Meses</option>';
+  meses.forEach(function(k){
+    var d=new Date(k+'-01T00:00:00');
+    var lbl=d.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+    lbl=lbl.charAt(0).toUpperCase()+lbl.slice(1);
+    var o=document.createElement('option');o.value=k;o.textContent=lbl;sel.appendChild(o);
+  });
+  var mesAtual=hoje.getFullYear()+'-'+String(hoje.getMonth()+1).padStart(2,'0');
+  if(meses.indexOf(mesAtual)!==-1)sel.value=mesAtual;
+}
+function load(){
+  var rc=localStorage.getItem(CK);contas=rc?JSON.parse(rc):[];
+  var rk=localStorage.getItem(KK);cats=rk?JSON.parse(rk):[];
+  fillMeses();atualizar();
+}
 function filtrar(){
-  var dias=parseInt(document.getElementById('f-per').value);
+  var mes=document.getElementById('f-mes').value;
   var sv=document.getElementById('f-st').value;
-  var ini=addD(hoje,-dias);
-  return contas.filter(function(c){var vd=new Date(c.vencimento+'T00:00:00');var s2=st(c);if(vd<ini&&s2!=='atrasado')return false;if(sv!=='todos'&&s2!==sv)return false;return true;});
+  return contas.filter(function(c){
+    var s2=st(c);
+    if(mes!=='todos'&&c.vencimento.slice(0,7)!==mes)return false;
+    if(sv!=='todos'&&s2!==sv)return false;
+    return true;
+  });
 }
 var chM,chC,chF;
 function atualizar(){var l=filtrar();kpis(l);chartMes(l);chartCat(l);aging(l);fluxo();tabela(l);}
